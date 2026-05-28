@@ -251,7 +251,6 @@ function checkStrength(val) {
   label.textContent = lvl.text;
   label.style.color = lvl.bg;
 }
-
 async function register() {
   const firstName = document.getElementById('firstName').value.trim();
   const lastName  = document.getElementById('lastName').value.trim();
@@ -281,6 +280,11 @@ async function register() {
   // Loading state
   setLoading(true);
   hideError();
+  hideSuccess();
+
+  // Add timeout to prevent infinite loading
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
   try {
     console.log('Sending registration request for:', email);
@@ -292,57 +296,58 @@ async function register() {
         name: `${firstName} ${lastName}`.trim(),
         email: email,
         password: password
-      })
+      }),
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
     
     console.log('Response status:', res.status);
     const data = await res.json();
     console.log('Response data:', data);
 
-   if (data.success === true) {
-  const successBanner = document.getElementById('successBanner');
-  const successMsg = document.getElementById('successMsg');
-  successMsg.textContent = data.message || 'Account created! Redirecting...';
-  successBanner.classList.add('show');
-  
-  setTimeout(() => {
-    window.location.href = '/login.html';
-  }, 2000);
-}else {
+    if (data.success === true) {
+      // Show success message
+      showSuccess(data.message || 'Account created! Redirecting to login...');
+      
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        window.location.href = '/login.html';
+      }, 2000);
+    } else {
       showError(data.message || 'Registration failed. Please try again.');
       setLoading(false);
     }
   } catch (err) {
+    clearTimeout(timeoutId);
     console.error('Registration error:', err);
-    showError('Network error. Please check your connection and try again.');
+    
+    if (err.name === 'AbortError') {
+      showError('Request timed out. Please check your connection and try again.');
+    } else {
+      showError('Network error: ' + err.message);
+    }
     setLoading(false);
   }
 }
 
-function setLoading(on) {
-  const btn = document.getElementById('submitBtn');
-  const spinner = document.getElementById('spinner');
-  const btnText = document.getElementById('btnText');
-  
-  btn.disabled = on;
-  spinner.style.display = on ? 'block' : 'none';
-  btnText.textContent = on ? 'Creating account…' : 'Create account';
-}
-
-function showError(msg) {
-  const errorBanner = document.getElementById('errorBanner');
-  const errorMsg = document.getElementById('errorMsg');
-  errorMsg.textContent = msg;
-  errorBanner.classList.add('show');
+function showSuccess(msg) {
+  const successBanner = document.getElementById('successBanner');
+  const successMsg = document.getElementById('successMsg');
+  if (successMsg) {
+    successMsg.textContent = msg;
+  }
+  successBanner.classList.add('show');
   
   // Auto hide after 5 seconds
   setTimeout(() => {
-    errorBanner.classList.remove('show');
+    successBanner.classList.remove('show');
   }, 5000);
 }
 
-function hideError() {
-  document.getElementById('errorBanner').classList.remove('show');
+function hideSuccess() {
+  const successBanner = document.getElementById('successBanner');
+  successBanner.classList.remove('show');
 }
 
 // Allow Enter key to submit
