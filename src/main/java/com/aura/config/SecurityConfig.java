@@ -44,7 +44,6 @@ public class SecurityConfig {
             )
             .formLogin(form -> form
                 .loginPage("/login.html")
-                .loginProcessingUrl("/api/auth/login")
                 .defaultSuccessUrl("/inbox.html", true)
                 .failureUrl("/login.html?error=true")
                 .permitAll()

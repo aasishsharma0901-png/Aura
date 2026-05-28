@@ -158,10 +158,10 @@ html,body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;back
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         <span id="errorMsg">Something went wrong. Please try again.</span>
       </div>
-      <div class="banner success" id="successBanner">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-        Account created! Redirecting to sign in…
-      </div>
+<div class="banner success" id="successBanner">
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="successMsg">Account created! Redirecting to sign in…</span>
+</div>
 
       <!-- Form -->
       <div class="field-row">
@@ -252,67 +252,140 @@ function checkStrength(val) {
   label.style.color = lvl.bg;
 }
 
+// Show error message
+function showError(msg) {
+  const errorBanner = document.getElementById('errorBanner');
+  const errorMsg = document.getElementById('errorMsg');
+  errorMsg.textContent = msg;
+  errorBanner.classList.add('show');
+  
+  setTimeout(() => {
+    errorBanner.classList.remove('show');
+  }, 5000);
+}
+
+// Hide error message
+function hideError() {
+  const errorBanner = document.getElementById('errorBanner');
+  errorBanner.classList.remove('show');
+}
+
+// Show success message
+function showSuccess(msg) {
+  const successBanner = document.getElementById('successBanner');
+  const successMsg = document.getElementById('successMsg');
+  if (successMsg) {
+    successMsg.textContent = msg;
+  } else {
+    // If no span, just show the banner
+    const textNode = document.createTextNode(msg);
+    successBanner.appendChild(textNode);
+  }
+  successBanner.classList.add('show');
+}
+
+// Hide success message
+function hideSuccess() {
+  const successBanner = document.getElementById('successBanner');
+  successBanner.classList.remove('show');
+}
+
+// Set loading state
+function setLoading(isLoading) {
+  const submitBtn = document.getElementById('submitBtn');
+  const spinner = document.getElementById('spinner');
+  const btnText = document.getElementById('btnText');
+  
+  if (submitBtn) submitBtn.disabled = isLoading;
+  if (spinner) spinner.style.display = isLoading ? 'block' : 'none';
+  if (btnText) btnText.textContent = isLoading ? 'Creating account…' : 'Create account';
+}
+
+// Main register function
 async function register() {
   const firstName = document.getElementById('firstName').value.trim();
-  const lastName  = document.getElementById('lastName').value.trim();
-  const email     = document.getElementById('regEmail').value.trim();
-  const password  = document.getElementById('regPassword').value;
-  const confirm   = document.getElementById('regConfirm').value;
-  const agreed    = document.getElementById('agreeTerms').checked;
+  const lastName = document.getElementById('lastName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const confirm = document.getElementById('regConfirm').value;
+  const agreed = document.getElementById('agreeTerms').checked;
 
   // Validation
-  if (!firstName || !email || !password) return showError('Please fill in all required fields.');
-  if (password.length < 8) return showError('Password must be at least 8 characters.');
-  if (password !== confirm) return showError('Passwords do not match.');
-  if (!agreed) return showError('Please agree to the Terms of Service.');
+  if (!firstName || !email || !password) {
+    showError('Please fill in all required fields.');
+    return;
+  }
+  if (password.length < 8) {
+    showError('Password must be at least 8 characters.');
+    return;
+  }
+  if (password !== confirm) {
+    showError('Passwords do not match.');
+    return;
+  }
+  if (!agreed) {
+    showError('Please agree to the Terms of Service.');
+    return;
+  }
 
   // Loading state
   setLoading(true);
   hideError();
+  hideSuccess();
 
   try {
+    console.log('Sending registration request for:', email);
+    
     const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: `${firstName} ${lastName}`.trim(),
-        email,
-        password
+        email: email,
+        password: password
       })
     });
+    
+    console.log('Response status:', res.status);
     const data = await res.json();
+    console.log('Response data:', data);
 
-    if (data.success) {
-      document.getElementById('successBanner').classList.add('show');
-      setTimeout(() => window.location.href = '/login.html', 1800);
+    if (data.success === true) {
+      // Show success message
+      showSuccess(data.message || 'Account created! Redirecting to login...');
+      
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        window.location.href = '/login.html';
+      }, 2000);
     } else {
       showError(data.message || 'Registration failed. Please try again.');
+      setLoading(false);
     }
-  } catch (e) {
-    showError('Network error. Please check your connection.');
-  } finally {
+  } catch (err) {
+    console.error('Registration error:', err);
+    showError('Network error: ' + err.message);
     setLoading(false);
   }
 }
 
-function setLoading(on) {
-  document.getElementById('submitBtn').disabled = on;
-  document.getElementById('spinner').style.display = on ? 'block' : 'none';
-  document.getElementById('btnText').textContent = on ? 'Creating account…' : 'Create account';
-}
-
-function showError(msg) {
-  document.getElementById('errorMsg').textContent = msg;
-  document.getElementById('errorBanner').classList.add('show');
-}
-
-function hideError() {
-  document.getElementById('errorBanner').classList.remove('show');
-}
+// Make sure button has click handler when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  const submitBtn = document.getElementById('submitBtn');
+  if (submitBtn) {
+    submitBtn.onclick = register;
+  }
+});
 
 // Allow Enter key to submit
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') register();
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    const activeElement = document.activeElement;
+    if (activeElement && activeElement.tagName === 'INPUT') {
+      e.preventDefault();
+      register();
+    }
+  }
 });
 </script>
 </body>
