@@ -45,14 +45,14 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         if (client != null) {
             OAuth2AccessToken at = client.getAccessToken();
             OAuth2RefreshToken rt = client.getRefreshToken();
-            if (at != null)  accessToken  = at.getTokenValue();
-            if (rt != null)  refreshToken = rt.getTokenValue();
+            if (at != null) accessToken = at.getTokenValue();
+            if (rt != null) refreshToken = rt.getTokenValue();
         }
 
         userService.findOrCreate(token.getPrincipal(), accessToken, refreshToken);
-        System.out.println("=== OAuth success, redirecting to inbox ===");
+
+        // Force redirect to inbox — no Outlook or saved request
         clearAuthenticationAttributes(request);
-response.sendRedirect("/inbox.html");
+        response.sendRedirect("/inbox.html");
     }
-    
 }
