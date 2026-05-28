@@ -180,13 +180,65 @@ if (new URLSearchParams(location.search).get('error')) {
 
 document.getElementById('emailForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const res = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `username=${encodeURIComponent(document.getElementById('loginEmail').value)}&password=${encodeURIComponent(document.getElementById('loginPassword').value)}`
-  });
-  if (res.redirected) window.location.href = res.url;
-  else document.getElementById('errorBanner').classList.add('show');
+  
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errorBanner = document.getElementById('errorBanner');
+  
+  if (!email || !password) {
+    errorBanner.textContent = 'Email and password are required';
+    errorBanner.classList.add('show');
+    return;
+  }
+  
+  errorBanner.classList.remove('show');
+  errorBanner.textContent = 'Sign-in failed. Please try again or contact support.';
+  
+  console.log('Attempting login for:', email);
+  
+  try {
+    // Create form data for Spring Security
+    const formData = new URLSearchParams();
+    formData.append('username', email);
+    formData.append('password', password);
+    
+    const res = await fetch('/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData,
+      redirect: 'manual'  // Don't auto follow redirects
+    });
+    
+    console.log('Login response status:', res.status);
+    
+    if (res.status === 302 || res.status === 200) {
+      // Check where it's redirecting
+      const location = res.headers.get('location');
+      console.log('Redirect location:', location);
+      
+      if (location && location.includes('inbox')) {
+        window.location.href = '/inbox.html';
+      } else if (location) {
+        window.location.href = location;
+      } else {
+        // Try to access inbox directly
+        window.location.href = '/inbox.html';
+      }
+    } else if (res.status === 401) {
+      errorBanner.textContent = 'Invalid email or password';
+      errorBanner.classList.add('show');
+    } else {
+      const text = await res.text();
+      console.error('Login failed:', text);
+      errorBanner.classList.add('show');
+    }
+  } catch (err) {
+    console.error('Login error:', err);
+    errorBanner.textContent = 'Network error. Please try again.';
+    errorBanner.classList.add('show');
+  }
 });
 
 // ← ADD BELOW HERE
@@ -198,19 +250,40 @@ async function register() {
   const name = document.getElementById('regName').value.trim();
   const email = document.getElementById('regEmail').value.trim();
   const password = document.getElementById('regPassword').value;
-  if (!name || !email || !password) return alert('Fill in all fields.');
-  const res = await fetch('/api/auth/register', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, password })
-  });
-  const data = await res.json();
-  if (data.success) {
-    alert('Account created! Now sign in.');
-    document.getElementById('registerSection').style.display = 'none';
-    document.getElementById('loginEmail').value = email;
-  } else {
-    alert(data.message || 'Registration failed.');
+  
+  if (!name || !email || !password) {
+    alert('Fill in all fields.');
+    return;
+  }
+  
+  if (password.length < 8) {
+    alert('Password must be at least 8 characters.');
+    return;
+  }
+  
+  console.log('Registering:', email);
+  
+  try {
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+    });
+    
+    const data = await res.json();
+    console.log('Register response:', data);
+    
+    if (data.success) {
+      alert('Account created! Now sign in.');
+      document.getElementById('registerSection').style.display = 'none';
+      document.getElementById('loginEmail').value = email;
+      document.getElementById('loginPassword').value = '';
+    } else {
+      alert(data.message || 'Registration failed.');
+    }
+  } catch (err) {
+    console.error('Register error:', err);
+    alert('Network error. Please try again.');
   }
 }
 </script>
