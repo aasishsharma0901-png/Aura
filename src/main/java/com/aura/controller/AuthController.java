@@ -23,11 +23,21 @@ public Map<String, Object> register(@RequestBody Map<String, String> body) {
     String password = body.get("password");
     String name = body.get("name");
 
+    System.out.println("=== REGISTRATION ATTEMPT ===");
+    System.out.println("Email: " + email);
+    System.out.println("Name: " + name);
+
     if (email == null || email.isEmpty())
         return Map.of("success", false, "message", "Email is required.");
+    
     if (password == null || password.length() < 8)
         return Map.of("success", false, "message", "Password must be at least 8 characters.");
-    if (userRepository.findByEmail(email).isPresent())
+    
+    // Check if user exists
+    boolean exists = userRepository.findByEmail(email).isPresent();
+    System.out.println("User exists in DB? " + exists);
+    
+    if (exists)
         return Map.of("success", false, "message", "Email already registered.");
 
     User user = new User();
@@ -35,9 +45,11 @@ public Map<String, Object> register(@RequestBody Map<String, String> body) {
     user.setName(name != null ? name : email.split("@")[0]);
     user.setPassword(passwordEncoder.encode(password));
     user.setProvider("local");
+    
     userRepository.save(user);
+    System.out.println("User saved successfully!");
 
-    // Email is optional — registration works even if it fails
+    // Welcome email (optional)
     try {
         sendWelcomeEmail(email, name);
     } catch (Exception e) {
