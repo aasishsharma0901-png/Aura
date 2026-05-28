@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aura — Your email. Revitalized.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: #0c0c0c;
+  color: #fff;
+  overflow-x: hidden;
+}
+::selection { background: rgba(61,129,227,0.3); }
+.liquid-glass {
+  background: rgba(255,255,255,0.01);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(4px);
+  border: none;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+  position: relative;
+  overflow: hidden;
+}
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 20%,
+    rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%,
+    rgba(255,255,255,0.15) 80%, rgba(255,255,255,0.45) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+@keyframes shiny {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.animate-shiny { animation: shiny 6s linear infinite; }
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeSlideUpSmall {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.anim-nav { animation: fadeSlideDown 0.6s ease-out forwards; opacity: 0; }
+.anim-hero-h1 { animation: fadeSlideUp 0.8s cubic-bezier(.22,1,.36,1) 0.3s forwards; opacity: 0; }
+.anim-hero-p { animation: fadeIn 0.8s ease-out 0.5s forwards; opacity: 0; }
+.anim-hero-cta { animation: fadeIn 0.8s ease-out 0.7s forwards; opacity: 0; }
+.anim-menubar { animation: fadeSlideDown 0.6s ease-out 0.9s forwards; opacity: 0; }
+.anim-inbox { animation: fadeSlideUp 0.8s cubic-bezier(.22,1,.36,1) 1.1s forwards; opacity: 0; }
+.anim-triage-left { animation: fadeSlideUpSmall 0.7s ease-out 0.1s forwards; opacity: 0; }
+.anim-triage-right { animation: fadeSlideUpSmall 0.7s ease-out 0.25s forwards; opacity: 0; }
+.nav-link-0 { animation: fadeIn 0.5s ease-out 0.15s forwards; opacity: 0; }
+.nav-link-1 { animation: fadeIn 0.5s ease-out 0.20s forwards; opacity: 0; }
+.nav-link-2 { animation: fadeIn 0.5s ease-out 0.25s forwards; opacity: 0; }
+.nav-link-3 { animation: fadeIn 0.5s ease-out 0.30s forwards; opacity: 0; }
+.nav-link-4 { animation: fadeIn 0.5s ease-out 0.35s forwards; opacity: 0; }
+.logo-0 { animation: fadeIn 0.5s ease-out 0.05s forwards; opacity: 0; }
+.logo-1 { animation: fadeIn 0.5s ease-out 0.10s forwards; opacity: 0; }
+.logo-2 { animation: fadeIn 0.5s ease-out 0.15s forwards; opacity: 0; }
+.logo-3 { animation: fadeIn 0.5s ease-out 0.20s forwards; opacity: 0; }
+.logo-4 { animation: fadeIn 0.5s ease-out 0.25s forwards; opacity: 0; }
+.logo-5 { animation: fadeIn 0.5s ease-out 0.30s forwards; opacity: 0; }
+.logo-6 { animation: fadeIn 0.5s ease-out 0.35s forwards; opacity: 0; }
+.logo-7 { animation: fadeIn 0.5s ease-out 0.40s forwards; opacity: 0; }
+.scroll-reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.scroll-reveal.visible { opacity: 1; transform: translateY(0); }
+.c3-pricing-section { position: relative; padding: 40px 20px 80px; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
+.c3-watermark-container { position: relative; width: 100%; max-width: 1100px; text-align: center; margin-top: 40px; z-index: 2; }
+.c3-watermark-main { font-size: 9rem; font-weight: 800; line-height: 0.9; letter-spacing: -0.05em; filter: url(#c3-noise); display: flex; flex-direction: column; align-items: center; }
+.c3-watermark-line-1 { color: #fff; }
+.c3-watermark-line-2 { background: linear-gradient(to right, #091020 0%, #0B2551 25%, #A4F4FD 65%, #00d2ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
+.c3-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%; max-width: 1100px; margin-top: 60px; transform: translateX(20px); position: relative; z-index: 3; }
+.c3-card { background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.4)); backdrop-filter: blur(14px) brightness(0.91); border: 1px solid rgba(255,255,255,1); border-radius: 44px; padding: 50px 24px; min-height: 580px; display: flex; flex-direction: column; transition: all 0.6s cubic-bezier(.22,1,.36,1); overflow: hidden; position: relative; }
+.c3-card::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%); pointer-events: none; }
+.c3-card:hover { background: rgba(15,15,15,0.6); border-color: rgba(34,211,238,0.7); transform: translateY(-12px) scale(1.01); }
+.c3-card-pro { background: linear-gradient(135deg, rgba(0,0,0,0.85), rgba(0,0,0,0.55)); }
+.c3-tier-small { font-size: 1.1rem; font-weight: 400; color: rgba(255,255,255,0.6); }
+.c3-tier-large { font-size: 2.8rem; font-weight: 500; letter-spacing: -0.02em; color: #fff; margin-top: 8px; }
+.c3-desc { font-size: 0.88rem; color: rgba(255,255,255,0.45); min-height: 3.2em; margin-top: 16px; margin-bottom: 40px; line-height: 1.5; }
+.c3-list { list-style: none; }
+.c3-list li { display: flex; align-items: flex-start; gap: 14px; font-size: 0.92rem; color: rgba(255,255,255,0.8); margin-bottom: 18px; line-height: 1.4; }
+.c3-check { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.15); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.c3-btn { background: #fff; color: #000; padding: 10px 32px; border-radius: 100px; font-weight: 600; font-size: 0.88rem; margin-top: auto; border: none; cursor: pointer; align-self: center; transition: all 0.3s cubic-bezier(.22,1,.36,1); font-family: inherit; text-decoration: none; display: inline-block; }
+.c3-btn:hover { background: #f5f5f5; transform: scale(1.02); box-shadow: 0 8px 24px rgba(255,255,255,0.15); }
+.c3-toggle-wrap { display: flex; align-items: center; justify-content: flex-end; gap: 12px; width: 100%; max-width: 1100px; margin-top: 32px; padding-right: 20px; }
+.c3-toggle { width: 52px; height: 28px; background: #fff; border-radius: 100px; position: relative; cursor: pointer; border: none; transition: background 0.3s cubic-bezier(.4,0,.2,1); padding: 0; }
+.c3-toggle-knob { width: 20px; height: 20px; background: #000; border-radius: 50%; position: absolute; top: 4px; left: 4px; transition: all 0.3s cubic-bezier(.4,0,.2,1); }
+.c3-toggle.active { background: rgba(255,255,255,0.2); }
+.c3-toggle.active .c3-toggle-knob { transform: translateX(24px); background: #fff; }
+@media (max-width: 1024px) {
+  .c3-watermark-main { font-size: 3.5rem; filter: none; }
+  .c3-watermark-line-2 { background: none; -webkit-text-fill-color: #00d2ff; color: #00d2ff; }
+  .c3-grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; transform: none; width: 100vw; padding: 0 20px; gap: 16px; scrollbar-width: none; }
+  .c3-grid::-webkit-scrollbar { display: none; }
+  .c3-card { flex: 0 0 320px; scroll-snap-align: center; }
+  .c3-toggle-wrap { justify-content: center; padding-right: 0; }
+}
+.max-w-6xl { max-width: 72rem; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+nav { position: sticky; top: 0; z-index: 50; padding: 1rem 0; }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; }
+.nav-links { display: none; gap: 2rem; }
+@media (min-width: 768px) { .nav-links { display: flex; align-items: center; } }
+.nav-link { color: rgba(255,255,255,0.7); font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: color 0.2s; }
+.nav-link:hover { color: #fff; }
+.nav-right { display: none; }
+@media (min-width: 768px) { .nav-right { display: flex; } }
+.nav-mobile-btn { display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); cursor: pointer; }
+@media (min-width: 768px) { .nav-mobile-btn { display: none; } }
+.apple-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 9999px; background: #fff; color: #000; font-weight: 500; font-size: 0.875rem; padding: 0.75rem 1.25rem; transition: all 0.2s; cursor: pointer; border: none; font-family: inherit; text-decoration: none; }
+.apple-btn:hover { background: rgba(255,255,255,0.9); }
+.apple-btn:active { transform: scale(0.98); }
+.apple-btn .chevron { transition: transform 0.2s; }
+.apple-btn:hover .chevron { transform: translateX(1px); }
+section { position: relative; z-index: 10; }
+.eyebrow { display: flex; align-items: center; gap: 0.5rem; }
+.eyebrow-dot { width: 0.375rem; height: 0.375rem; border-radius: 50%; background: #fff; }
+.eyebrow-label { font-size: 0.75rem; font-weight: 500; color: rgba(255,255,255,0.6); }
+.eyebrow-tag { padding: 0.125rem 0.5rem; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; color: rgba(255,255,255,0.5); }
+.chip { display: inline-flex; align-items: center; font-size: 0.75rem; color: rgba(255,255,255,0.7); padding: 0.375rem 0.75rem; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); }
+.icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 1.75rem; height: 1.75rem; border-radius: 0.375rem; border: none; background: transparent; cursor: pointer; color: rgba(255,255,255,0.5); transition: background 0.15s; }
+.icon-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+html { scroll-behavior: smooth; }
+
+
+img,
+video{
+  max-width:100%;
+  height:auto;
+}
+
+body{
+  overflow-x:hidden;
+}
+
+.max-w-6xl{
+  width:100%;
+}
+
+
+
+@media(max-width:768px){
+
+  nav{
+    padding:1rem;
+  }
+
+  .nav-inner{
+    width:100%;
+  }
+
+  .nav-links{
+    display:none !important;
+  }
+
+  .nav-right{
+    display:none !important;
+  }
+
+  .nav-mobile-btn{
+    display:flex !important;
+  }
+}
+
+@media(max-width:768px){
+
+  section{
+    padding-left:1rem !important;
+    padding-right:1rem !important;
+  }
+
+  .anim-hero-h1{
+    font-size:3rem !important;
+    line-height:1 !important;
+  }
+
+  .anim-hero-p{
+    font-size:0.95rem !important;
+    max-width:100% !important;
+  }
+
+  .anim-hero-cta{
+    width:100%;
+  }
+
+  .apple-btn{
+    width:100%;
+    justify-content:center;
+  }
+}
+
+
+
+@media(max-width:1024px){
+
+  .anim-inbox > div:nth-child(2){
+    display:flex !important;
+    flex-direction:column !important;
+    height:auto !important;
+  }
+
+  .anim-inbox > div:nth-child(2) > div{
+    width:100% !important;
+    border-right:none !important;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+}
+
+@media(max-width:768px){
+
+  .anim-inbox{
+    overflow:hidden;
+  }
+
+  .anim-inbox *{
+    font-size:90%;
+  }
+}
+
+
+@media(max-width:768px){
+
+  .triage-grid{
+    grid-template-columns:1fr !important;
+  }
+}
+
+
+
+
+@media(max-width:768px){
+
+  .logo-grid{
+    grid-template-columns:repeat(2,1fr) !important;
+    gap:1rem !important;
+  }
+}
+
+
+
+@media(max-width:768px){
+
+  .test-grid{
+    grid-template-columns:1fr !important;
+  }
+}
+
+
+
+@media(max-width:1024px){
+
+  .c3-grid{
+    display:flex !important;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    padding-bottom:1rem;
+  }
+
+  .c3-grid::-webkit-scrollbar{
+    display:none;
+  }
+
+  .c3-card{
+    min-width:320px;
+    scroll-snap-align:center;
+  }
+
+  .c3-watermark-main{
+    font-size:4rem !important;
+  }
+}
+
+@media(max-width:768px){
+
+  .c3-watermark-main{
+    font-size:2.8rem !important;
+  }
+
+  .c3-card{
+    min-width:85vw;
+    padding:2rem 1.25rem;
+  }
+}
+
+
+@media(max-width:768px){
+
+  .liquid-glass{
+    border-radius:1rem !important;
+  }
+
+  h2{
+    font-size:2rem !important;
+  }
+}
+
+
+#mobileMenu{
+  transition:all 0.3s ease;
+}
+
+
+*{
+  max-width:100%;
+}
+
+video{
+  object-fit:cover;
+}
+
+
+@media(max-width:768px){
+
+  .px-6{
+    padding-left:1rem !important;
+    padding-right:1rem !important;
+  }
+
+  .c3-pricing-section{
+    padding-left:1rem !important;
+    padding-right:1rem !important;
+  }
+}
+</style>
+</head>
+<body>
+<svg style="position:absolute;width:0;height:0;pointer-events:none" aria-hidden="true">
+  <defs>
+    <filter id="c3-noise-root">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+      <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.35 0" />
+      <feComposite in2="SourceGraphic" operator="in" result="noise" />
+      <feBlend in="SourceGraphic" in2="noise" mode="multiply" />
+    </filter>
+  </defs>
+</svg>
+
+<div style="position:relative;min-height:100vh;overflow-x:hidden;background:#0c0c0c;color:#fff">
+
+  <div style="position:fixed;inset:0;z-index:0;pointer-events:none">
+    <video autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;pointer-events:none"
+      src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260508_064122_c4750c0e-7476-4b44-94a2-a85a65c63bf2.mp4"></video>
+  </div>
+
+  <style>
+    @media(min-width:768px){
+      .guide-left,.guide-right{display:block;pointer-events:none;position:fixed;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.1);z-index:5;}
+      .guide-left{left:calc(50% - 36rem);}
+      .guide-right{left:calc(50% + 36rem);}
+    }
+  </style>
+  <div class="guide-left"></div>
+  <div class="guide-right"></div>
+
+  <!-- NAVBAR -->
+  <nav class="anim-nav" style="background:transparent;padding:1rem 0;">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="nav-inner">
+        <a href="/" style="display:flex;align-items:center;flex-shrink:0">
+          <svg width="32" height="32" viewBox="0 0 256 256" fill="none">
+            <path d="M 0 128 C 70.692 128 128 185.308 128 256 L 64 256 C 64 220.654 35.346 192 0 192 Z M 256 192 C 220.654 192 192 220.654 192 256 L 128 256 C 128 185.308 185.308 128 256 128 Z M 128 0 C 128 70.692 70.692 128 0 128 L 0 64 C 35.346 64 64 35.346 64 0 Z M 192 0 C 192 35.346 220.654 64 256 64 L 256 128 C 185.308 128 128 70.692 128 0 Z" fill="white"/>
+          </svg>
+        </a>
+        <div class="nav-links">
+        <a href="/solutions.html" class="nav-link nav-link-0">Solutions</a>
+<a href="/pricing.html" class="nav-link nav-link-1">Pricing</a>
+<a href="/blog.html" class="nav-link nav-link-2">Blog</a>
+<a href="/documentation.html" class="nav-link nav-link-3">Documentation</a>
+<a href="/careers.html" class="nav-link nav-link-4">Careers</a>
+        </div>
+       <div class="nav-right">
+  <a href="/login.html" class="apple-btn">
+    <svg viewBox="0 0 384 512" width="16" height="16" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+    Get Started
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="chevron"><path d="M9 18l6-6-6-6"/></svg>
+  </a>
+</div>
+        <button class="nav-mobile-btn" onclick="toggleMobileMenu()">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+      </div>
+    </div>
+  </nav>
+<!-- Mobile menu -->
+<div id="mobileMenu" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(12,12,12,0.98);backdrop-filter:blur(16px);flex-direction:column;align-items:center;justify-content:center;gap:2rem;">
+  <button onclick="toggleMobileMenu()" style="position:absolute;top:1.25rem;right:1.25rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:50%;width:40px;height:40px;color:#fff;font-size:1.25rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+  <a href="/solutions.html" onclick="toggleMobileMenu()" style="font-size:1.5rem;font-weight:600;color:#fff;text-decoration:none;letter-spacing:-0.02em;">Solutions</a>
+  <a href="/pricing.html" onclick="toggleMobileMenu()" style="font-size:1.5rem;font-weight:600;color:#fff;text-decoration:none;letter-spacing:-0.02em;">Pricing</a>
+  <a href="/blog.html" onclick="toggleMobileMenu()" style="font-size:1.5rem;font-weight:600;color:#fff;text-decoration:none;letter-spacing:-0.02em;">Blog</a>
+  <a href="/documentation.html" onclick="toggleMobileMenu()" style="font-size:1.5rem;font-weight:600;color:#fff;text-decoration:none;letter-spacing:-0.02em;">Documentation</a>
+  <a href="/careers.html" onclick="toggleMobileMenu()" style="font-size:1.5rem;font-weight:600;color:#fff;text-decoration:none;letter-spacing:-0.02em;">Careers</a>
+  <a href="/login.html" style="margin-top:1rem;display:inline-flex;align-items:center;gap:0.5rem;padding:0.875rem 2rem;border-radius:9999px;background:#fff;color:#000;font-size:1rem;font-weight:600;text-decoration:none;">Get Started Free →</a>
+</div>
+  <!-- HERO -->
+  <section style="padding:4rem 1.5rem 5rem;text-align:center;display:flex;flex-direction:column;align-items:center;">
+    <h1 class="anim-hero-h1" style="font-size:clamp(2.5rem,8vw,4.5rem);font-weight:600;letter-spacing:-0.04em;line-height:0.9;max-width:900px;">
+      <span style="display:block;color:#fff">Your email.</span>
+      <span class="animate-shiny" style="display:block;background-image:linear-gradient(to right,#091020 0%,#0B2551 12.5%,#A4F4FD 32.5%,#00d2ff 50%,#0B2551 67.5%,#091020 87.5%,#091020 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;filter:url(#c3-noise-root)">Revitalized</span>
+    </h1>
+    <p class="anim-hero-p" style="margin-top:2rem;color:rgba(255,255,255,0.6);max-width:28rem;font-size:1rem;line-height:1.5;">
+      Aura is the premier inbox platform for the current era. It leverages powerful AI to organize, prioritize, and refine your messages into total clarity.
+    </p>
+    <div class="anim-hero-cta" style="margin-top:2.5rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
+      <a href="/login.html" class="apple-btn">
+        <svg viewBox="0 0 384 512" width="16" height="16" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+        Get Started Free
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="chevron"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <span style="font-size:0.75rem;color:rgba(255,255,255,0.4)">Free to start · No credit card required</span>
+    </div>
+  </section>
+
+  <!-- MENU BAR -->
+  <div class="anim-menubar" style="width:100%;height:2.5rem;background:rgba(0,0,0,0.4);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,0.1);border-bottom:1px solid rgba(255,255,255,0.1);position:relative;z-index:20;">
+    <div class="max-w-6xl mx-auto px-6" style="height:100%;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:1rem;font-size:0.75rem;">
+        <svg viewBox="0 0 384 512" width="14" height="14" fill="white"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+        <span style="font-weight:700;color:#fff">Aura</span>
+        <span style="color:rgba(255,255,255,0.6)">File</span>
+        <span style="color:rgba(255,255,255,0.6)">Edit</span>
+        <span style="color:rgba(255,255,255,0.6)">View</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.75rem;color:rgba(255,255,255,0.6)">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <span>Wed May 6 &nbsp;1:09 PM</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- INBOX MOCKUP -->
+  <section style="padding:4rem 1.5rem 6rem;position:relative;z-index:10;">
+    <div class="max-w-6xl mx-auto">
+      <div class="anim-inbox" style="border-radius:1rem;overflow:hidden;border:1px solid rgba(255,255,255,0.1);background:rgba(14,16,20,0.9);backdrop-filter:blur(24px);">
+        <div style="height:2.5rem;display:flex;align-items:center;justify-content:space-between;padding:0 1rem;border-bottom:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.3);">
+          <div style="display:flex;align-items:center;gap:0.375rem;">
+            <div style="width:0.75rem;height:0.75rem;border-radius:50%;background:#ff5f57"></div>
+            <div style="width:0.75rem;height:0.75rem;border-radius:50%;background:#febc2e"></div>
+            <div style="width:0.75rem;height:0.75rem;border-radius:50%;background:#28c840"></div>
+          </div>
+          <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">Aura — Inbox</span>
+          <div style="width:3.5rem"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:3fr 4fr 5fr;height:520px;">
+          <div style="border-right:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.3);padding:1rem;overflow-y:auto;display:flex;flex-direction:column;gap:0.75rem;">
+            <button style="display:flex;align-items:center;gap:0.375rem;width:100%;border-radius:0.5rem;background:#fff;color:#000;font-size:0.75rem;font-weight:600;padding:0.5rem 0.75rem;border:none;cursor:pointer;font-family:inherit;">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813a2 2 0 001.275 1.275L21 12l-5.813 1.912a2 2 0 00-1.275 1.275L12 21l-1.912-5.813a2 2 0 00-1.275-1.275L3 12l5.813-1.912a2 2 0 001.275-1.275L12 3z"/></svg>
+              Compose with Aura
+            </button>
+            <nav style="display:flex;flex-direction:column;gap:0.25rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;padding:0.375rem 0.5rem;border-radius:0.375rem;background:rgba(255,255,255,0.1);cursor:pointer;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="white" stroke-width="2"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>
+                <span style="font-size:0.8rem;color:#fff;flex:1">Inbox</span>
+                <span style="font-size:0.7rem;color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.1);padding:0.1rem 0.4rem;border-radius:9999px;">12</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:0.5rem;padding:0.375rem 0.5rem;border-radius:0.375rem;cursor:pointer;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span style="font-size:0.8rem;color:rgba(255,255,255,0.6);flex:1">Starred</span><span style="font-size:0.7rem;color:rgba(255,255,255,0.4);">3</span></div>
+              <div style="display:flex;align-items:center;gap:0.5rem;padding:0.375rem 0.5rem;border-radius:0.375rem;cursor:pointer;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span style="font-size:0.8rem;color:rgba(255,255,255,0.6);flex:1">Sent</span></div>
+              <div style="display:flex;align-items:center;gap:0.5rem;padding:0.375rem 0.5rem;border-radius:0.375rem;cursor:pointer;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg><span style="font-size:0.8rem;color:rgba(255,255,255,0.6);flex:1">Trash</span></div>
+            </nav>
+            <div style="margin-top:auto">
+              <div style="font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.3);margin-bottom:0.5rem;padding:0 0.5rem;">Labels</div>
+              <div style="display:flex;flex-direction:column;gap:0.25rem;">
+                <div style="display:flex;align-items:center;gap:0.5rem;padding:0.25rem 0.5rem;"><div style="width:0.5rem;height:0.5rem;border-radius:50%;background:#00d2ff;flex-shrink:0"></div><span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">Work</span></div>
+                <div style="display:flex;align-items:center;gap:0.5rem;padding:0.25rem 0.5rem;"><div style="width:0.5rem;height:0.5rem;border-radius:50%;background:#A4F4FD;flex-shrink:0"></div><span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">Personal</span></div>
+                <div style="display:flex;align-items:center;gap:0.5rem;padding:0.25rem 0.5rem;"><div style="width:0.5rem;height:0.5rem;border-radius:50%;background:#f59e0b;flex-shrink:0"></div><span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">Travel</span></div>
+              </div>
+            </div>
+          </div>
+          <div style="border-right:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;overflow:hidden;">
+            <div style="padding:0.75rem;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <div style="display:flex;align-items:center;gap:0.5rem;background:rgba(255,255,255,0.05);border-radius:0.5rem;padding:0.375rem 0.625rem;">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <span style="font-size:0.75rem;color:rgba(255,255,255,0.3)">Search mail</span>
+              </div>
+            </div>
+            <div style="flex:1;overflow-y:auto;">
+              <div style="padding:0.75rem;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;background:rgba(255,255,255,0.06);">
+                <div style="display:flex;justify-content:space-between;gap:0.5rem;"><div style="display:flex;align-items:center;gap:0.375rem;"><div style="width:0.375rem;height:0.375rem;border-radius:50%;background:#3D81E3;flex-shrink:0"></div><span style="font-size:0.78rem;font-weight:600;color:#fff;">Linear</span></div><span style="font-size:0.65rem;color:rgba(255,255,255,0.4);">9:41 AM</span></div>
+                <div style="font-size:0.75rem;font-weight:500;color:rgba(255,255,255,0.85);margin-top:0.2rem;">Weekly product digest</div>
+                <div style="font-size:0.7rem;color:rgba(255,255,255,0.4);margin-top:0.1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Your team shipped 23 issues this week...</div>
+              </div>
+              <div style="padding:0.75rem;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;">
+                <div style="display:flex;justify-content:space-between;gap:0.5rem;"><div style="display:flex;align-items:center;gap:0.375rem;"><div style="width:0.375rem;height:0.375rem;border-radius:50%;background:#3D81E3;flex-shrink:0"></div><span style="font-size:0.78rem;font-weight:600;color:#fff;">Sophia Chen</span></div><span style="font-size:0.65rem;color:rgba(255,255,255,0.4);">8:12 AM</span></div>
+                <div style="font-size:0.75rem;font-weight:500;color:rgba(255,255,255,0.85);margin-top:0.2rem;">Re: Q3 roadmap review</div>
+                <div style="font-size:0.7rem;color:rgba(255,255,255,0.4);margin-top:0.1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Thanks for sending the deck over...</div>
+              </div>
+              <div style="padding:0.75rem;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;"><div style="display:flex;justify-content:space-between;"><span style="font-size:0.78rem;color:rgba(255,255,255,0.7)">Figma</span><span style="font-size:0.65rem;color:rgba(255,255,255,0.3)">Yesterday</span></div><div style="font-size:0.75rem;color:rgba(255,255,255,0.6);margin-top:0.2rem;">Marcus commented on your file</div></div>
+              <div style="padding:0.75rem;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;"><div style="display:flex;justify-content:space-between;"><span style="font-size:0.78rem;color:rgba(255,255,255,0.7)">Stripe</span><span style="font-size:0.65rem;color:rgba(255,255,255,0.3)">Yesterday</span></div><div style="font-size:0.75rem;color:rgba(255,255,255,0.6);margin-top:0.2rem;">Payout of $12,480.00 sent</div></div>
+              <div style="padding:0.75rem;cursor:pointer;"><div style="display:flex;justify-content:space-between;"><span style="font-size:0.78rem;color:rgba(255,255,255,0.7)">GitHub</span><span style="font-size:0.65rem;color:rgba(255,255,255,0.3)">Mon</span></div><div style="font-size:0.75rem;color:rgba(255,255,255,0.6);margin-top:0.2rem;">[aura/core] PR #482 approved</div></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;overflow:hidden;">
+            <div style="height:2.75rem;display:flex;align-items:center;justify-content:space-between;padding:0 0.75rem;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <div style="display:flex;align-items:center;gap:0.25rem;">
+                <button class="icon-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 00-4-4H4"/></svg></button>
+                <button class="icon-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></button>
+                <button class="icon-btn"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
+              </div>
+            </div>
+            <div style="flex:1;overflow-y:auto;padding:1rem;">
+              <h3 style="font-size:0.95rem;font-weight:600;color:#fff;margin-bottom:0.75rem;">Weekly product digest</h3>
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
+                <div style="width:1.75rem;height:1.75rem;border-radius:50%;background:linear-gradient(135deg,#00d2ff,#0B2551);display:flex;align-items:center;justify-content:center;"><span style="font-size:0.65rem;font-weight:700;color:#fff">L</span></div>
+                <div><div style="font-size:0.78rem;font-weight:600;color:#fff">Linear</div><div style="font-size:0.65rem;color:rgba(255,255,255,0.4)">to me · 9:41 AM</div></div>
+                <span style="font-size:0.65rem;padding:0.125rem 0.5rem;border-radius:9999px;border:1px solid rgba(0,210,255,0.3);color:#00d2ff;margin-left:auto;">Work</span>
+              </div>
+              <div style="border-radius:0.625rem;background:rgba(164,244,253,0.05);border:1px solid rgba(164,244,253,0.15);padding:0.75rem;margin-bottom:0.875rem;">
+                <div style="display:flex;align-items:center;gap:0.375rem;margin-bottom:0.375rem;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#A4F4FD" stroke-width="2"><path d="M12 3l1.912 5.813a2 2 0 001.275 1.275L21 12l-5.813 1.912a2 2 0 00-1.275 1.275L12 21l-1.912-5.813a2 2 0 00-1.275-1.275L3 12l5.813-1.912a2 2 0 001.275-1.275L12 3z"/></svg><span style="font-size:0.7rem;font-weight:600;color:#A4F4FD">Summary by Aura</span></div>
+                <p style="font-size:0.75rem;color:rgba(255,255,255,0.7);line-height:1.5;">Your team closed 23 issues, merged 14 PRs, and shipped 2 features. Top contributor: Marcus. No action needed.</p>
+              </div>
+              <div style="font-size:0.8rem;color:rgba(255,255,255,0.75);line-height:1.6;display:flex;flex-direction:column;gap:0.625rem;">
+                <p>Hi team,</p>
+                <p>Here is your weekly digest. This was a strong week with significant progress on the Q3 roadmap.</p>
+                <p>Twenty-three issues were closed, fourteen pull requests were merged, and two customer-facing features went out.</p>
+                <p style="color:rgba(255,255,255,0.5)">— The Linear team</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRIAGE -->
+  <section style="padding:5rem 1.5rem 7rem;position:relative;z-index:10;" class="scroll-reveal">
+    <div class="max-w-6xl mx-auto">
+      <div style="display:grid;grid-template-columns:1fr;gap:2.5rem;align-items:start;" class="triage-grid">
+        <div class="anim-triage-left">
+          <div class="eyebrow"><div class="eyebrow-dot"></div><span class="eyebrow-label">Triage</span><span class="eyebrow-tag">AI-native</span></div>
+          <h2 style="margin-top:1.25rem;font-size:clamp(1.875rem,4vw,3rem);font-weight:600;letter-spacing:-0.04em;line-height:1.02;color:#fff;">Clear your inbox<br>in a single pass.</h2>
+          <p style="margin-top:1.5rem;color:rgba(255,255,255,0.6);font-size:1rem;line-height:1.6;max-width:28rem;">Aura reads every message, understands intent, and routes the noise away from the signal.</p>
+          <div style="margin-top:1.5rem;display:flex;flex-wrap:wrap;gap:0.5rem;">
+            <span class="chip">Auto-categorize</span><span class="chip">Snooze for later</span><span class="chip">Silent newsletters</span><span class="chip">One-tap unsubscribe</span>
+          </div>
+        </div>
+        <div class="liquid-glass anim-triage-right" style="border-radius:1rem;padding:1.25rem;">
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:1rem;font-weight:500;">Today · 42 messages triaged</div>
+          <div style="display:flex;flex-direction:column;gap:0.5rem;">
+            <div class="liquid-glass" style="border-radius:0.5rem;padding:0.75rem;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;"><span style="font-size:0.72rem;font-weight:600;color:#fff">Priority</span><span style="font-size:0.65rem;padding:0.1rem 0.4rem;border-radius:9999px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6)">4</span></div><div style="font-size:0.72rem;color:rgba(255,255,255,0.6)">Sophia Chen — Q3 review</div><div style="font-size:0.72rem;color:rgba(255,255,255,0.6)">David Lim — contract signoff</div></div>
+            <div class="liquid-glass" style="border-radius:0.5rem;padding:0.75rem;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;"><span style="font-size:0.72rem;font-weight:600;color:#e5e5e5">Follow-up</span><span style="font-size:0.65rem;padding:0.1rem 0.4rem;border-radius:9999px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6)">7</span></div><div style="font-size:0.72rem;color:rgba(255,255,255,0.5)">Marcus — design review</div><div style="font-size:0.72rem;color:rgba(255,255,255,0.5)">Figma — comment thread</div></div>
+            <div class="liquid-glass" style="border-radius:0.5rem;padding:0.75rem;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;"><span style="font-size:0.72rem;font-weight:600;color:#a3a3a3">Updates</span><span style="font-size:0.65rem;padding:0.1rem 0.4rem;border-radius:9999px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6)">18</span></div><div style="font-size:0.72rem;color:rgba(255,255,255,0.4)">Vercel — deploy ready</div><div style="font-size:0.72rem;color:rgba(255,255,255,0.4)">GitHub — PR #482 merged</div></div>
+            <div class="liquid-glass" style="border-radius:0.5rem;padding:0.75rem;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;"><span style="font-size:0.72rem;font-weight:600;color:#525252">Archived</span><span style="font-size:0.65rem;padding:0.1rem 0.4rem;border-radius:9999px;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.3)">13</span></div><div style="font-size:0.72rem;color:rgba(255,255,255,0.3)">Stripe payout · Newsletter · Receipts</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <style>@media(min-width:768px){ .triage-grid{grid-template-columns:1fr 1fr!important;gap:4rem!important;} }</style>
+
+  <!-- LOGO CLOUD -->
+  <section style="padding:4rem 1.5rem 5rem;position:relative;z-index:10;" class="scroll-reveal">
+    <div class="max-w-6xl mx-auto" style="text-align:center;">
+      <p style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4)">Trusted by the world's most thoughtful teams</p>
+      <div style="margin-top:2.5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;" class="logo-grid">
+        <span class="logo-0" style="font-size:0.875rem;font-weight:600;color:rgba(255,255,255,0.5);text-align:center;cursor:default;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Linear</span>
+        <span class="logo-1" style="font-size:0.875rem;font-weight:600;color:rgba(255,255,255,0.5);text-align:center;cursor:default;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Vercel</span>
+        <span class="logo-2" style="font-size:0.875rem;font-weight:600;color:rgba(255,255,255,0.5);text-align:center;cursor:default;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Figma</span>
+        <span class="logo-3" style="font-size:0.875rem;font-weight:600;color:rgba(255,255,255,0.5);text-align:center;cursor:default;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Stripe</span>
+        <span class="logo-4" style="font-size:0.875rem;font-weight:600;color:rgba(255,255,255,0.5);text-align:center;cursor:default;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Ramp</span>
+        <span class="logo-5" style="font-size:0.875rem;font-weight:600;color:rgba(255,255,255,0.5);text-align:center;cursor:default;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Notion</span>
+        <span class="logo-6" style="font-size:0.875rem;font-weight:600;color:rgba(255,255,255,0.5);text-align:center;cursor:default;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Loom</span>
+        <span class="logo-7" style="font-size:0.875rem;font-weight:600;color:rgba(255,255,255,0.5);text-align:center;cursor:default;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Arc</span>
+      </div>
+    </div>
+  </section>
+  <style>@media(min-width:1024px){ .logo-grid{grid-template-columns:repeat(8,1fr)!important;} }</style>
+
+  <!-- TESTIMONIALS -->
+  <section style="padding:5rem 1.5rem 7rem;border-top:1px solid rgba(255,255,255,0.1);position:relative;z-index:10;" class="scroll-reveal">
+    <div class="max-w-6xl mx-auto">
+      <div style="display:grid;grid-template-columns:1fr;gap:1.5rem;" class="test-grid">
+        <figure class="liquid-glass" style="border-radius:1rem;padding:1.5rem;"><blockquote style="font-size:0.875rem;color:rgba(255,255,255,0.8);line-height:1.6;">"Aura gave our leadership team four hours of their week back. It reads like email from the future."</blockquote><figcaption style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,0.1);"><div style="font-size:0.875rem;font-weight:600;color:#fff">Parker Wilf</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:0.125rem">Group Product Manager</div><div style="font-size:0.75rem;font-weight:600;color:#fff;letter-spacing:0.05em;text-transform:uppercase;margin-top:0.25rem">MERCURY</div></figcaption></figure>
+        <figure class="liquid-glass" style="border-radius:1rem;padding:1.5rem;"><blockquote style="font-size:0.875rem;color:rgba(255,255,255,0.8);line-height:1.6;">"The command palette alone has changed how I process messages. I can't imagine going back."</blockquote><figcaption style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,0.1);"><div style="font-size:0.875rem;font-weight:600;color:#fff">Andrew von Rosenbach</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:0.125rem">Senior Engineering Program Manager</div><div style="font-size:0.75rem;font-weight:600;color:#fff;letter-spacing:0.05em;text-transform:uppercase;margin-top:0.25rem">COHERE</div></figcaption></figure>
+        <figure class="liquid-glass" style="border-radius:1rem;padding:1.5rem;"><blockquote style="font-size:0.875rem;color:rgba(255,255,255,0.8);line-height:1.6;">"Triage that actually understands context. Our team stopped dreading Monday morning inboxes."</blockquote><figcaption style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,0.1);"><div style="font-size:0.875rem;font-weight:600;color:#fff">Mathies Christensen</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:0.125rem">Engineering Manager</div><div style="font-size:0.75rem;font-weight:600;color:#fff;letter-spacing:0.05em;text-transform:uppercase;margin-top:0.25rem">LUNAR</div></figcaption></figure>
+      </div>
+    </div>
+  </section>
+  <style>@media(min-width:768px){ .test-grid{grid-template-columns:repeat(3,1fr)!important;} }</style>
+
+  <!-- PRICING -->
+  <section class="c3-pricing-section scroll-reveal" style="position:relative;z-index:10;">
+    <svg style="position:absolute;width:0;height:0" aria-hidden="true"><defs><filter id="c3-noise"><feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" stitchTiles="stitch" /><feComponentTransfer><feFuncA type="linear" slope="0.075" /></feComponentTransfer><feComposite in2="SourceGraphic" operator="in" result="noise" /><feBlend in="SourceGraphic" in2="noise" mode="overlay" /></filter></defs></svg>
+    <div class="c3-watermark-container"><div class="c3-watermark-main"><span class="c3-watermark-line-1">Your email.</span><span class="c3-watermark-line-2">Revitalized</span></div></div>
+    <div class="c3-toggle-wrap"><span style="font-size:0.875rem;color:rgba(255,255,255,0.7)">Yearly</span><button class="c3-toggle" id="pricingToggle" onclick="togglePricing()"><div class="c3-toggle-knob" id="toggleKnob"></div></button></div>
+    <div class="c3-grid">
+      <div class="c3-card">
+        <div class="c3-tier-small">Free</div><div class="c3-tier-large">Free</div>
+        <div class="c3-desc">Get started with Aura at no cost.</div>
+        <ul class="c3-list">
+          <li><span class="c3-check"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="white" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></span>1 Gmail account</li>
+          <li><span class="c3-check"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="white" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></span>5 AI summaries / day</li>
+          <li><span class="c3-check"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="white" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></span>Basic inbox + send</li>
+          <li><span class="c3-check"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="white" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></span>One-tap unsubscribe</li>
+        </ul>
+        <a href="/login.html" class="c3-btn">Get Started</a>
+      </div>
+      <div class="c3-card">
+        <div class="c3-tier-small">Standard</div><div class="c3-tier-large" id="standardPrice">$9.99/m</div>
+        <div class="c3-desc">For individuals who want the full AI experience.</div>
+        <ul class="c3-list">
+          <li><span class="c3-check"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="white" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></span>Unlimited AI summaries</li>
+          <li><span class="c3-check"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="white" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></span>Smart triage</li>
+          <li><span class="c3-check"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="white" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></span>AI compose</li>
+          <li><span class="c3-check"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="white" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></span>Smart replies</li>
+          <li><span class="c3-check"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="white" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></span>Priority support</li>
+        </ul>
+     <button onclick="checkout('standard')" style="margin-top:1.5rem;display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 2rem;border-radius:9999px;background:#fff;color:#000;font-size:0.875rem;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:background 0.15s;width:100%;">Get Standard</button>
+      </div>
+      <div class="c3-card c3-card-pro">
+        <div class="c3-tier-small">Pro</div><div class="c3-tier-large" id="proPrice">$19.99/m</div>
+        <div class="c3-desc">For founders and power users who live in their inbox.</div>
+        <ul class="c3-list">
+          <li><span class="c3-check"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="white" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></span>Everything in Standard</li>
+          <li><span class="c3-check"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="white" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></span>Up to 5 email accounts</li>
+          <li><span class="c3-check"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="white" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></span>Custom AI triage rules</li>
+          <li><span class="c3-check"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="white" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></span>Team inbox (up to 5)</li>
+          <li><span class="c3-check"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="white" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></span>API access</li>
+        </ul>
+   <button onclick="checkout('pro')" style="margin-top:1.5rem;display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 2rem;border-radius:9999px;background:#fff;color:#000;font-size:0.875rem;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:background 0.15s;width:100%;">Get Pro</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section style="padding:5rem 1.5rem 8rem;position:relative;z-index:10;" class="scroll-reveal">
+    <div class="max-w-6xl mx-auto">
+      <div class="liquid-glass" style="border-radius:1.5rem;padding:4rem 2rem;text-align:center;position:relative;overflow:hidden;">
+        <div style="position:absolute;inset:0;background:radial-gradient(600px circle at 50% 0%,rgba(255,255,255,0.15),transparent 70%);opacity:0.3;pointer-events:none;"></div>
+        <h2 style="font-size:clamp(2rem,5vw,3.5rem);font-weight:600;letter-spacing:-0.04em;line-height:1.02;color:#fff;position:relative;">Close the tabs.<br>Open your day.</h2>
+        <p style="margin-top:1.5rem;color:rgba(255,255,255,0.6);max-width:28rem;margin-left:auto;margin-right:auto;font-size:0.875rem;line-height:1.6;position:relative;">Join thousands of builders, founders, and operators who treat email like a tool — not an obligation.</p>
+        <div style="margin-top:2rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0.75rem;position:relative;">
+          <a href="/login.html" class="apple-btn">
+            <svg viewBox="0 0 384 512" width="16" height="16" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+            Get Started Free
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="chevron"><path d="M9 18l6-6-6-6"/></svg>
+          </a>
+          <a href="/pricing.html" style="display:inline-flex;align-items:center;gap:0.375rem;border-radius:9999px;border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:0.875rem;font-weight:500;padding:0.75rem 1.25rem;background:transparent;cursor:pointer;font-family:inherit;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+            View pricing
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+let yearly = false;
+function togglePricing() {
+  yearly = !yearly;
+  const toggle = document.getElementById('pricingToggle');
+  const standardPrice = document.getElementById('standardPrice');
+  const proPrice = document.getElementById('proPrice');
+  if (yearly) {
+    toggle.classList.add('active');
+    standardPrice.textContent = '$99.99/y';
+    proPrice.textContent = '$199.99/y';
+  } else {
+    toggle.classList.remove('active');
+    standardPrice.textContent = '$9.99/m';
+    proPrice.textContent = '$19.99/m';
+  }
+}
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+</script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+async function checkout(plan) {
+  const res = await fetch('/api/razorpay/order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ plan })
+  });
+  const data = await res.json();
+  if (data.error) { alert('Something went wrong.'); return; }
+  const options = {
+    key: data.keyId,
+    amount: data.amount,
+    currency: data.currency,
+    name: 'Aura',
+    description: 'Aura ' + plan + ' Plan',
+    order_id: data.orderId,
+    handler: function(response) {
+      window.location.href = '/login.html';
+    },
+    theme: { color: '#00d2ff' }
+  };
+  const rzp = new Razorpay(options);
+  rzp.open();
+}
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const isOpen = menu.style.display === 'flex';
+  menu.style.display = isOpen ? 'none' : 'flex';
+  document.body.style.overflow = isOpen ? '' : 'hidden';
+}
+</script>
+<script>
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+
+  if(menu.style.display === 'flex'){
+    menu.style.display = 'none';
+  } else {
+    menu.style.display = 'flex';
+  }
+}
+</script>
+</body>
+</html>

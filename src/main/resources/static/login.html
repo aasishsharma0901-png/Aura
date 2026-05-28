@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Aura — Sign in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;background:#0c0c0c;color:#fff;height:100%;overflow:hidden;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+@keyframes shiny{0%{background-position:-200% center;}100%{background-position:200% center;}}
+
+.page{display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative;}
+
+/* Ambient glow */
+.glow{position:fixed;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,210,255,0.07) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-60%);pointer-events:none;}
+
+/* Card */
+.card{
+  width:100%;max-width:400px;padding:2.5rem;
+  background:rgba(255,255,255,0.03);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:1.5rem;
+  animation:fadeUp 0.7s cubic-bezier(.22,1,.36,1) forwards;
+  position:relative;z-index:10;
+  box-shadow:0 0 80px rgba(0,0,0,0.5);
+}
+.card::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.2) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.15) 100%);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;
+}
+
+/* Logo */
+.logo{display:flex;align-items:center;gap:0.625rem;margin-bottom:2rem;}
+.logo-text{font-size:1.1rem;font-weight:700;letter-spacing:-0.03em;}
+
+/* Heading */
+.heading{font-size:1.5rem;font-weight:600;letter-spacing:-0.04em;line-height:1.1;margin-bottom:0.625rem;}
+.subheading{font-size:0.875rem;color:rgba(255,255,255,0.5);line-height:1.5;margin-bottom:2rem;}
+
+/* Divider */
+.divider{display:flex;align-items:center;gap:0.75rem;margin:1.25rem 0;}
+.divider hr{flex:1;border:none;border-top:1px solid rgba(255,255,255,0.1);}
+.divider span{font-size:0.75rem;color:rgba(255,255,255,0.3);}
+
+/* Google button */
+.google-btn{
+  display:flex;align-items:center;justify-content:center;gap:0.625rem;
+  width:100%;padding:0.75rem;border-radius:0.625rem;
+  background:#fff;color:#1a1a1a;
+  font-size:0.875rem;font-weight:600;font-family:inherit;
+  border:none;cursor:pointer;
+  transition:all 0.2s;
+  text-decoration:none;
+}
+.google-btn:hover{background:#f0f0f0;transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,255,255,0.1);}
+.google-btn:active{transform:scale(0.98);}
+
+/* Email input (for future email/password login) */
+.field{display:flex;flex-direction:column;gap:0.375rem;margin-bottom:1rem;}
+.field label{font-size:0.8rem;font-weight:500;color:rgba(255,255,255,0.7);}
+.field input{
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+  border-radius:0.5rem;padding:0.625rem 0.875rem;
+  color:#fff;font-size:0.875rem;font-family:inherit;
+  transition:border-color 0.2s,background 0.2s;
+  outline:none;
+}
+.field input:focus{border-color:rgba(0,210,255,0.5);background:rgba(255,255,255,0.08);}
+.field input::placeholder{color:rgba(255,255,255,0.2);}
+
+/* Footer */
+.footer{margin-top:1.5rem;text-align:center;font-size:0.75rem;color:rgba(255,255,255,0.3);}
+.footer a{color:rgba(255,255,255,0.5);text-decoration:none;}
+.footer a:hover{color:#fff;}
+
+/* Error banner */
+.error-banner{
+  display:none;align-items:center;gap:0.5rem;padding:0.625rem 0.875rem;
+  background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);
+  border-radius:0.5rem;margin-bottom:1rem;font-size:0.8rem;color:#fca5a5;
+}
+.error-banner.show{display:flex;}
+</style>
+</head>
+<body>
+
+<div class="glow"></div>
+
+<div class="page">
+  <div style="width:100%;max-width:400px;padding:1.5rem;position:relative;z-index:10;">
+
+    <div class="card">
+
+      <!-- Logo -->
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 256 256" fill="none">
+          <path d="M 0 128 C 70.692 128 128 185.308 128 256 L 64 256 C 64 220.654 35.346 192 0 192 Z M 256 192 C 220.654 192 192 220.654 192 256 L 128 256 C 128 185.308 185.308 128 256 128 Z M 128 0 C 128 70.692 70.692 128 0 128 L 0 64 C 35.346 64 64 35.346 64 0 Z M 192 0 C 192 35.346 220.654 64 256 64 L 256 128 C 185.308 128 128 70.692 128 0 Z" fill="white"/>
+        </svg>
+        <span class="logo-text">Aura</span>
+      </div>
+
+      <!-- Heading -->
+      <h1 class="heading">Sign in to Aura</h1>
+      <p class="subheading">Connect your inbox and experience email the way it should feel.</p>
+
+      <!-- Error banner (shown on ?error=true) -->
+      <div class="error-banner" id="errorBanner">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Sign-in failed. Please try again or contact support.
+      </div>
+
+      <!-- Google OAuth button (Spring Security endpoint) -->
+      <a href="/oauth2/authorization/google" class="google-btn">
+        <svg viewBox="0 0 24 24" width="18" height="18">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Continue with Google
+      </a>
+
+      <div class="divider">
+        <hr/><span>or</span><hr/>
+      </div>
+
+      <!-- Email sign-in (disabled placeholder — implement if you add passwords) -->
+      <form id="emailForm">
+  <div class="field">
+    <label>Email address</label>
+    <input type="email" id="loginEmail" placeholder="you@company.com"/>
+  </div>
+  <div class="field">
+    <label>Password</label>
+    <input type="password" id="loginPassword" placeholder="••••••••"/>
+  </div>
+  <button type="submit" style="width:100%;padding:0.75rem;border-radius:0.625rem;background:#fff;border:none;color:#000;font-size:0.875rem;font-weight:600;font-family:inherit;cursor:pointer;margin-bottom:0.25rem;">Sign in with email</button>
+</form>
+<p style="text-align:center;font-size:0.78rem;color:rgba(255,255,255,0.4);margin-top:0.75rem;">
+  No account? <a href="/register.html" style="color:#00d2ff;text-decoration:none;">Create one</a>
+</p>
+<div id="registerSection" style="display:none;margin-top:1rem;border-top:1px solid rgba(255,255,255,0.1);padding-top:1rem;">
+  <div class="field">
+    <label>Name</label>
+    <input type="text" id="regName" placeholder="Your name"/>
+  </div>
+  <div class="field">
+    <label>Email</label>
+    <input type="email" id="regEmail" placeholder="you@company.com"/>
+  </div>
+  <div class="field">
+    <label>Password</label>
+    <input type="password" id="regPassword" placeholder="••••••••"/>
+  </div>
+  <button onclick="register()" style="width:100%;padding:0.75rem;border-radius:0.625rem;background:#00d2ff;border:none;color:#000;font-size:0.875rem;font-weight:600;font-family:inherit;cursor:pointer;">Create account</button>
+</div>
+
+      <div class="footer">
+        By continuing you agree to our
+        <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.<br/>
+        <a href="/" style="margin-top:0.5rem;display:inline-block;">← Back to home</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('error')) {
+  document.getElementById('errorBanner').classList.add('show');
+}
+
+document.getElementById('emailForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const res = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `username=${encodeURIComponent(document.getElementById('loginEmail').value)}&password=${encodeURIComponent(document.getElementById('loginPassword').value)}`
+  });
+  if (res.redirected) window.location.href = res.url;
+  else document.getElementById('errorBanner').classList.add('show');
+});
+
+// ← ADD BELOW HERE
+function showRegister() {
+  document.getElementById('registerSection').style.display = 'block';
+}
+
+async function register() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  if (!name || !email || !password) return alert('Fill in all fields.');
+  const res = await fetch('/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, password })
+  });
+  const data = await res.json();
+  if (data.success) {
+    alert('Account created! Now sign in.');
+    document.getElementById('registerSection').style.display = 'none';
+    document.getElementById('loginEmail').value = email;
+  } else {
+    alert(data.message || 'Registration failed.');
+  }
+}
+</script>
+</body>
+</html>

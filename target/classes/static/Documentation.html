@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Aura — Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ─── Reset & base ─────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;background:#0c0c0c;color:#fff;overflow-x:hidden;}
+
+/* ─── Animations ────────────────────────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideInLeft{from{transform:translateX(-100%);}to{transform:translateX(0);}}
+
+/* ─── Layout helpers ────────────────────────────────────────────── */
+.max-w{max-width:72rem;margin:0 auto;padding:0 1.5rem;}
+
+/* ─── Nav ───────────────────────────────────────────────────────── */
+nav{
+  padding:1.1rem 0;
+  background:rgba(12,12,12,0.85);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  position:sticky;top:0;z-index:200;
+}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:0.625rem;text-decoration:none;flex-shrink:0;}
+.logo-text{font-size:1rem;font-weight:700;letter-spacing:-0.03em;color:#fff;}
+.nav-links{display:flex;align-items:center;gap:1.75rem;}
+.nav-link{color:rgba(255,255,255,0.6);font-size:0.875rem;font-weight:500;text-decoration:none;transition:color 0.2s;white-space:nowrap;}
+.nav-link:hover,.nav-link.active{color:#fff;}
+.btn-nav{
+  display:inline-flex;align-items:center;gap:0.375rem;
+  padding:0.5rem 1.25rem;border-radius:9999px;
+  background:#fff;color:#000;font-size:0.875rem;font-weight:600;
+  border:none;cursor:pointer;font-family:inherit;text-decoration:none;
+  transition:background 0.15s;white-space:nowrap;
+}
+.btn-nav:hover{background:#e8e8e8;}
+
+/* Hamburger (top nav) */
+.hamburger{
+  display:none;flex-direction:column;justify-content:center;gap:5px;
+  width:36px;height:36px;padding:6px;
+  background:transparent;border:1px solid rgba(255,255,255,0.12);
+  border-radius:8px;cursor:pointer;flex-shrink:0;
+}
+.hamburger span{
+  display:block;width:100%;height:1.5px;background:#fff;
+  border-radius:9999px;transition:transform 0.3s,opacity 0.3s;transform-origin:center;
+}
+.hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+
+/* Mobile nav dropdown */
+.mobile-menu{
+  display:none;flex-direction:column;
+  background:rgba(14,14,14,0.97);
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  animation:slideDown 0.2s ease-out;
+  position:relative;z-index:190;
+}
+.mobile-menu.open{display:flex;}
+.mobile-menu a{
+  color:rgba(255,255,255,0.7);font-size:0.9rem;font-weight:500;
+  text-decoration:none;padding:0.9rem 1.5rem;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  transition:color 0.2s,background 0.2s;
+}
+.mobile-menu a:hover,.mobile-menu a.active{color:#fff;background:rgba(255,255,255,0.04);}
+.mobile-menu .mobile-signin{
+  margin:1rem 1.5rem 1.25rem;
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:0.7rem 1.25rem;border-radius:9999px;
+  background:#fff;color:#000;font-size:0.875rem;font-weight:600;
+  text-decoration:none;transition:background 0.15s;
+}
+.mobile-menu .mobile-signin:hover{background:#e8e8e8;}
+
+/* ─── Docs layout ───────────────────────────────────────────────── */
+.layout{
+  display:grid;
+  grid-template-columns:260px 1fr;
+  min-height:calc(100vh - 57px);
+}
+
+/* ─── Sidebar (desktop) ─────────────────────────────────────────── */
+.sidebar{
+  border-right:1px solid rgba(255,255,255,0.07);
+  padding:2rem 1.25rem;
+  position:sticky;top:57px;
+  height:calc(100vh - 57px);
+  overflow-y:auto;
+  flex-shrink:0;
+}
+.sidebar-section{margin-bottom:2rem;}
+.sidebar-label{
+  font-size:0.65rem;font-weight:600;text-transform:uppercase;
+  letter-spacing:0.1em;color:rgba(255,255,255,0.3);
+  margin-bottom:0.5rem;padding:0 0.5rem;
+}
+.sidebar-link{
+  display:flex;align-items:center;gap:0.5rem;
+  padding:0.4rem 0.5rem;border-radius:0.375rem;
+  font-size:0.82rem;color:rgba(255,255,255,0.6);
+  text-decoration:none;transition:all 0.15s;cursor:pointer;
+}
+.sidebar-link:hover{background:rgba(255,255,255,0.05);color:#fff;}
+.sidebar-link.active{background:rgba(0,210,255,0.1);color:#00d2ff;}
+.sidebar-link .dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+
+/* ─── Mobile sidebar drawer ─────────────────────────────────────── */
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  z-index:150;
+}
+.sidebar-overlay.open{display:block;}
+.sidebar-drawer{
+  position:fixed;top:0;left:0;bottom:0;
+  width:min(280px, 80vw);
+  background:#111;
+  border-right:1px solid rgba(255,255,255,0.1);
+  padding:1.5rem 1.25rem;
+  overflow-y:auto;z-index:160;
+  transform:translateX(-100%);
+  transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.sidebar-drawer.open{transform:translateX(0);}
+.drawer-close{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:1.5rem;padding-bottom:1rem;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.drawer-close-btn{
+  background:transparent;border:none;color:rgba(255,255,255,0.5);
+  cursor:pointer;font-size:1.1rem;padding:0.25rem;
+  transition:color 0.2s;
+}
+.drawer-close-btn:hover{color:#fff;}
+.drawer-title{font-size:0.9rem;font-weight:600;color:rgba(255,255,255,0.8);}
+
+/* ─── Docs mobile top bar ───────────────────────────────────────── */
+.docs-mobile-bar{
+  display:none;
+  align-items:center;gap:0.75rem;
+  padding:0.75rem 1.25rem;
+  background:rgba(255,255,255,0.02);
+  border-bottom:1px solid rgba(255,255,255,0.07);
+  position:sticky;top:57px;z-index:100;
+}
+.docs-menu-btn{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  padding:0.425rem 0.875rem;border-radius:0.5rem;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  color:rgba(255,255,255,0.7);font-size:0.8rem;font-weight:500;
+  cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;
+}
+.docs-menu-btn:hover{background:rgba(255,255,255,0.08);color:#fff;}
+.docs-breadcrumb{
+  font-size:0.78rem;color:rgba(255,255,255,0.4);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.docs-breadcrumb span{color:rgba(255,255,255,0.7);}
+
+/* ─── Content ───────────────────────────────────────────────────── */
+.content{padding:3rem 4rem 6rem;max-width:780px;}
+
+/* ─── Doc typography ────────────────────────────────────────────── */
+.doc-section{margin-bottom:4rem;}
+.eyebrow{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#00d2ff;margin-bottom:0.75rem;}
+h1{font-size:clamp(1.75rem,4vw,2.25rem);font-weight:700;letter-spacing:-0.03em;margin-bottom:1rem;line-height:1.15;}
+h2{font-size:1.25rem;font-weight:600;letter-spacing:-0.02em;margin-bottom:0.875rem;margin-top:2.5rem;}
+h3{font-size:1rem;font-weight:600;margin-bottom:0.5rem;margin-top:1.5rem;}
+p{font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.75;margin-bottom:1rem;}
+.lead{font-size:1rem;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:2rem;}
+
+/* ─── Code ──────────────────────────────────────────────────────── */
+pre{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:0.625rem;padding:1.25rem;
+  overflow-x:auto;margin:1rem 0 1.5rem;
+  -webkit-overflow-scrolling:touch;
+}
+code{font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#A4F4FD;line-height:1.6;}
+.inline-code{
+  font-family:'JetBrains Mono',monospace;font-size:0.8rem;
+  background:rgba(255,255,255,0.07);padding:0.15rem 0.4rem;
+  border-radius:0.25rem;color:#A4F4FD;word-break:break-all;
+}
+
+/* ─── Steps ─────────────────────────────────────────────────────── */
+.steps{display:flex;flex-direction:column;gap:1.5rem;margin:1.5rem 0;}
+.step{display:flex;gap:1rem;}
+.step-num{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(0,210,255,0.15);border:1px solid rgba(0,210,255,0.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;font-weight:700;color:#00d2ff;flex-shrink:0;margin-top:2px;
+}
+.step-body h3{margin-top:0;}
+
+/* ─── Alerts ────────────────────────────────────────────────────── */
+.alert{border-radius:0.625rem;padding:1rem 1.25rem;margin:1.25rem 0;display:flex;gap:0.75rem;}
+.alert-info{background:rgba(0,210,255,0.06);border:1px solid rgba(0,210,255,0.2);}
+.alert-warn{background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);}
+.alert-icon{flex-shrink:0;margin-top:2px;}
+.alert p{margin:0;font-size:0.85rem;}
+.alert-info p{color:rgba(164,244,253,0.85);}
+.alert-warn p{color:rgba(251,191,36,0.85);}
+
+/* ─── Tables ────────────────────────────────────────────────────── */
+/* Wrap every table for horizontal scroll on small screens */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:1rem 0 1.5rem;border-radius:0.5rem;}
+table{width:100%;border-collapse:collapse;font-size:0.85rem;min-width:400px;}
+th{
+  text-align:left;padding:0.625rem 0.875rem;
+  background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.6);
+  font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);
+  white-space:nowrap;
+}
+td{
+  padding:0.625rem 0.875rem;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  color:rgba(255,255,255,0.75);vertical-align:top;
+}
+tr:last-child td{border-bottom:none;}
+.method{
+  display:inline-block;font-family:'JetBrains Mono',monospace;
+  font-size:0.72rem;font-weight:600;
+  padding:0.15rem 0.4rem;border-radius:0.25rem;white-space:nowrap;
+}
+.get    {background:rgba(16,185,129,0.15);color:#34d399;}
+.post   {background:rgba(0,210,255,0.15);color:#00d2ff;}
+.delete {background:rgba(239,68,68,0.15);color:#f87171;}
+.patch  {background:rgba(245,158,11,0.15);color:#fbbf24;}
+
+/* ─── Divider ───────────────────────────────────────────────────── */
+hr{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:3rem 0;}
+
+/* ─── Footer ────────────────────────────────────────────────────── */
+footer{
+  border-top:1px solid rgba(255,255,255,0.07);
+  padding:2rem 1.5rem;text-align:center;
+  font-size:0.78rem;color:rgba(255,255,255,0.3);
+}
+footer a{color:rgba(255,255,255,0.45);text-decoration:none;margin:0 0.75rem;}
+footer a:hover{color:#fff;}
+.footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:0.25rem;margin-bottom:0.75rem;}
+
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+═══════════════════════════════════════════════════════════════════ */
+
+/* ── 960px: tighten nav ── */
+@media(max-width:960px){
+  .nav-links{gap:1.25rem;}
+  .content{padding:2.5rem 2.5rem 5rem;}
+}
+
+/* ── 820px: collapse to single column, show mobile sidebar controls ── */
+@media(max-width:820px){
+  .layout{grid-template-columns:1fr;}
+  .sidebar{display:none;}                /* hidden; drawer takes over */
+  .docs-mobile-bar{display:flex;}
+  .content{padding:2rem 1.5rem 4rem;max-width:100%;}
+  h2{margin-top:2rem;}
+}
+
+/* ── 700px: top nav hamburger ── */
+@media(max-width:700px){
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .docs-mobile-bar{top:53px;}            /* adjust for slightly shorter nav */
+}
+
+/* ── 580px: tighter content, smaller lead ── */
+@media(max-width:580px){
+  .content{padding:1.5rem 1rem 3.5rem;}
+  .lead{font-size:0.95rem;}
+  pre{padding:1rem;font-size:0.78rem;}
+  .alert{padding:0.875rem 1rem;gap:0.625rem;}
+  .step{gap:0.75rem;}
+  .cta-box{padding:2rem 1.25rem;}
+  footer a{margin:0 0.4rem;}
+}
+
+/* ── 380px ── */
+@media(max-width:380px){
+  .max-w{padding:0 1rem;}
+  .docs-mobile-bar{padding:0.625rem 1rem;}
+  h1{font-size:1.6rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- ─── Top Nav ───────────────────────────────────────────────────── -->
+<nav>
+  <div class="max-w nav-inner">
+    <a href="/index.html" class="logo">
+      <svg width="26" height="26" viewBox="0 0 256 256" fill="none">
+        <path d="M 0 128 C 70.692 128 128 185.308 128 256 L 64 256 C 64 220.654 35.346 192 0 192 Z
+                 M 256 192 C 220.654 192 192 220.654 192 256 L 128 256 C 128 185.308 185.308 128 256 128 Z
+                 M 128 0 C 128 70.692 70.692 128 0 128 L 0 64 C 35.346 64 64 35.346 64 0 Z
+                 M 192 0 C 192 35.346 220.654 64 256 64 L 256 128 C 185.308 128 128 70.692 128 0 Z" fill="white"/>
+      </svg>
+      <span class="logo-text">Home</span>
+    </a>
+    <div class="nav-links">
+      <a href="/solutions.html"     class="nav-link">Solutions</a>
+      <a href="/pricing.html"       class="nav-link">Pricing</a>
+      <a href="/blog.html"          class="nav-link">Blog</a>
+      <a href="/documentation.html" class="nav-link active">Documentation</a>
+      <a href="/careers.html"       class="nav-link">Careers</a>
+      <a href="/login.html"         class="btn-nav">Sign in →</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile nav dropdown -->
+<div class="mobile-menu" id="mobileMenu" role="navigation">
+  <a href="/solutions.html">Solutions</a>
+  <a href="/pricing.html">Pricing</a>
+  <a href="/blog.html">Blog</a>
+  <a href="/documentation.html" class="active">Documentation</a>
+  <a href="/careers.html">Careers</a>
+  <a href="/login.html" class="mobile-signin">Sign in →</a>
+</div>
+
+<!-- ─── Mobile docs bar (sticky, appears below nav on small screens) ── -->
+<div class="docs-mobile-bar" id="docsMobileBar">
+  <button class="docs-menu-btn" id="drawerToggle" onclick="openDrawer()">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="3" y1="6"  x2="21" y2="6"/><line x1="3" y1="12" x2="16" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+    Menu
+  </button>
+  <div class="docs-breadcrumb" id="breadcrumb">Getting started › <span id="breadcrumbCurrent">Introduction</span></div>
+</div>
+
+<!-- ─── Sidebar drawer (mobile) ─────────────────────────────────────── -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeDrawer()"></div>
+<div class="sidebar-drawer" id="sidebarDrawer">
+  <div class="drawer-close">
+    <span class="drawer-title">Documentation</span>
+    <button class="drawer-close-btn" onclick="closeDrawer()" aria-label="Close menu">✕</button>
+  </div>
+  <!-- same sidebar content, driven by same show() function -->
+  <div class="sidebar-section">
+    <div class="sidebar-label">Getting started</div>
+    <a class="sidebar-link active" onclick="show('intro','Introduction','Getting started')"><div class="dot"></div>Introduction</a>
+    <a class="sidebar-link" onclick="show('quickstart','Quick start','Getting started')"><div class="dot"></div>Quick start</a>
+    <a class="sidebar-link" onclick="show('auth','Authentication','Getting started')"><div class="dot"></div>Authentication</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Core features</div>
+    <a class="sidebar-link" onclick="show('inbox','Inbox','Core features')"><div class="dot"></div>Inbox</a>
+    <a class="sidebar-link" onclick="show('triage','AI Triage','Core features')"><div class="dot"></div>AI Triage</a>
+    <a class="sidebar-link" onclick="show('compose','AI Compose','Core features')"><div class="dot"></div>AI Compose</a>
+    <a class="sidebar-link" onclick="show('search','Search','Core features')"><div class="dot"></div>Search</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">API reference</div>
+    <a class="sidebar-link" onclick="show('api-emails','Emails API','API reference')"><div class="dot"></div>Emails API</a>
+    <a class="sidebar-link" onclick="show('api-user','User API','API reference')"><div class="dot"></div>User API</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Resources</div>
+    <a class="sidebar-link" href="/pricing.html"><div class="dot"></div>Pricing</a>
+    <a class="sidebar-link" href="/blog.html"><div class="dot"></div>Blog</a>
+  </div>
+</div>
+
+<!-- ─── Main layout ───────────────────────────────────────────────── -->
+<div class="layout">
+
+  <!-- Desktop sidebar -->
+  <div class="sidebar" id="desktopSidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Getting started</div>
+      <a class="sidebar-link active" onclick="show('intro','Introduction','Getting started')"><div class="dot"></div>Introduction</a>
+      <a class="sidebar-link" onclick="show('quickstart','Quick start','Getting started')"><div class="dot"></div>Quick start</a>
+      <a class="sidebar-link" onclick="show('auth','Authentication','Getting started')"><div class="dot"></div>Authentication</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Core features</div>
+      <a class="sidebar-link" onclick="show('inbox','Inbox','Core features')"><div class="dot"></div>Inbox</a>
+      <a class="sidebar-link" onclick="show('triage','AI Triage','Core features')"><div class="dot"></div>AI Triage</a>
+      <a class="sidebar-link" onclick="show('compose','AI Compose','Core features')"><div class="dot"></div>AI Compose</a>
+      <a class="sidebar-link" onclick="show('search','Search','Core features')"><div class="dot"></div>Search</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">API reference</div>
+      <a class="sidebar-link" onclick="show('api-emails','Emails API','API reference')"><div class="dot"></div>Emails API</a>
+      <a class="sidebar-link" onclick="show('api-user','User API','API reference')"><div class="dot"></div>User API</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Resources</div>
+      <a class="sidebar-link" href="/pricing.html"><div class="dot"></div>Pricing</a>
+      <a class="sidebar-link" href="/blog.html"><div class="dot"></div>Blog</a>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Introduction -->
+    <div class="doc-section" id="doc-intro">
+      <div class="eyebrow">Introduction</div>
+      <h1>Aura Documentation</h1>
+      <p class="lead">Welcome to the Aura developer docs. Aura is an AI-powered email client built on Spring Boot with Gmail API integration and Gemini AI for smart triage, summarization, and compose.</p>
+      <div class="alert alert-info">
+        <div class="alert-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#00d2ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <p>Aura is currently in private beta. To get access, sign in with your Google account and request early access.</p>
+      </div>
+      <h2>What is Aura?</h2>
+      <p>Aura connects to your Gmail account via OAuth2 and provides a clean 3-pane inbox interface with AI features layered on top — email summaries, smart triage, AI compose, and one-tap unsubscribe.</p>
+      <h2>Tech stack</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Layer</th><th>Technology</th></tr>
+          <tr><td>Backend</td><td>Spring Boot 3.2, Java 21</td></tr>
+          <tr><td>Auth</td><td>Spring Security OAuth2 (Google)</td></tr>
+          <tr><td>Email</td><td>Gmail API v1</td></tr>
+          <tr><td>AI</td><td>Gemini 2.0 Flash</td></tr>
+          <tr><td>Database</td><td>MySQL + Spring Data JPA</td></tr>
+          <tr><td>Frontend</td><td>Vanilla HTML/CSS/JS/REACT</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <hr/>
+
+    <!-- Quick start -->
+    <div class="doc-section" id="doc-quickstart" style="display:none;">
+      <div class="eyebrow">Quick start</div>
+      <h1>Get Aura running locally</h1>
+      <p class="lead">From zero to inbox in under 10 minutes.</p>
+      <h2>Prerequisites</h2>
+      <p>You'll need Java 21+, MySQL, and accounts on Google Cloud Console and AI Studio.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body"><h3>Clone and open in VS Code</h3><p>Open the project folder in VS Code with the Extension Pack for Java installed.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h3>Create MySQL database</h3>
+<pre><code>CREATE DATABASE aura;
+CREATE USER 'aura_user'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON aura.* TO 'aura_user'@'localhost';</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h3>Configure application.properties</h3>
+<pre><code>server.port=9091
+spring.datasource.url=jdbc:mysql://localhost:3306/aura
+spring.datasource.username=aura_user
+spring.datasource.password=password
+spring.security.oauth2.client.registration.google.client-id=YOUR_CLIENT_ID
+spring.security.oauth2.client.registration.google.client-secret=YOUR_SECRET
+gemini.api.key=YOUR_GEMINI_KEY</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body"><h3>Run AuraApplication.java</h3><p>Click the ▶ Run button above the main method in VS Code. Wait for <span class="inline-code">Tomcat started on port 9091</span>.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body"><h3>Open the app</h3><p>Navigate to <span class="inline-code">http://localhost:9091</span> and sign in with Google.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Auth -->
+    <div class="doc-section" id="doc-auth" style="display:none;">
+      <div class="eyebrow">Authentication</div>
+      <h1>Google OAuth2</h1>
+      <p class="lead">Aura uses Google OAuth2 for authentication. Users sign in with their Google account and grant Gmail permissions.</p>
+      <h2>Required scopes</h2>
+<pre><code>openid
+email
+profile
+https://www.googleapis.com/auth/gmail.readonly
+https://www.googleapis.com/auth/gmail.send
+https://www.googleapis.com/auth/gmail.modify</code></pre>
+      <div class="alert alert-warn">
+        <div class="alert-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <p>Before going public, you must complete Google's OAuth app verification. Until then, only test users added in Google Cloud Console can sign in.</p>
+      </div>
+      <h2>Adding test users</h2>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><p>Go to <span class="inline-code">console.cloud.google.com</span> → APIs & Services → OAuth consent screen</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><p>Scroll to Test users → click Add users → enter the Gmail address</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><p>Save. The user can now sign in immediately.</p></div></div>
+      </div>
+    </div>
+
+    <!-- Inbox -->
+    <div class="doc-section" id="doc-inbox" style="display:none;">
+      <div class="eyebrow">Core features</div>
+      <h1>Inbox</h1>
+      <p class="lead">The inbox fetches emails live from Gmail via the Gmail API. No email content is stored in Aura's database.</p>
+      <h2>Keyboard shortcuts</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Key</th><th>Action</th></tr>
+          <tr><td><span class="inline-code">e</span></td><td>Archive selected email</td></tr>
+          <tr><td><span class="inline-code">r</span></td><td>Reply to selected email</td></tr>
+          <tr><td><span class="inline-code">s</span></td><td>Star selected email</td></tr>
+          <tr><td><span class="inline-code">#</span></td><td>Move to trash</td></tr>
+          <tr><td><span class="inline-code">c</span></td><td>Open compose window</td></tr>
+          <tr><td><span class="inline-code">j / ↓</span></td><td>Next email</td></tr>
+          <tr><td><span class="inline-code">k / ↑</span></td><td>Previous email</td></tr>
+          <tr><td><span class="inline-code">Esc</span></td><td>Close compose</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Triage -->
+    <div class="doc-section" id="doc-triage" style="display:none;">
+      <div class="eyebrow">Core features</div>
+      <h1>AI Triage</h1>
+      <p class="lead">Aura uses Gemini to classify every email into one of four categories when you open it.</p>
+      <h2>Categories</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Category</th><th>Description</th></tr>
+          <tr><td><strong>Priority</strong></td><td>Needs action from you today — requests, questions, approvals</td></tr>
+          <tr><td><strong>Follow-up</strong></td><td>Something you need to check back on or that needs a response</td></tr>
+          <tr><td><strong>Update</strong></td><td>FYI notifications — deploy confirmations, PR merges, payouts</td></tr>
+          <tr><td><strong>Archive</strong></td><td>Newsletters, promotions, receipts, automated digests</td></tr>
+        </table>
+      </div>
+      <h2>How it works</h2>
+      <p>When you click an email, Aura calls <span class="inline-code">POST /api/emails/{id}/summarize</span> which sends the From, Subject, and Snippet to Gemini and returns both a summary and a triage category in one call.</p>
+    </div>
+
+    <!-- Compose -->
+    <div class="doc-section" id="doc-compose" style="display:none;">
+      <div class="eyebrow">Core features</div>
+      <h1>AI Compose</h1>
+      <p class="lead">Press <span class="inline-code">C</span> or click Compose with Aura to open the compose window. Type an instruction in the AI bar to generate a draft.</p>
+      <h2>Example instructions</h2>
+<pre><code>"Decline the meeting, suggest next Tuesday instead"
+"Follow up on the proposal I sent last week"
+"Thank them and ask for a 15-minute call this week"
+"Write a professional reply accepting the offer"</code></pre>
+      <p>Aura sends your instruction plus the context of the open email thread to Gemini, which returns a full email body ready to send or edit.</p>
+    </div>
+
+    <!-- Search -->
+    <div class="doc-section" id="doc-search" style="display:none;">
+      <div class="eyebrow">Core features</div>
+      <h1>Search</h1>
+      <p class="lead">Aura uses Gmail's native search syntax — the same queries you'd use in Gmail work here.</p>
+      <h2>Example queries</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Query</th><th>What it finds</th></tr>
+          <tr><td><span class="inline-code">from:stripe.com</span></td><td>All emails from Stripe</td></tr>
+          <tr><td><span class="inline-code">is:unread</span></td><td>Unread emails only</td></tr>
+          <tr><td><span class="inline-code">subject:invoice</span></td><td>Emails with "invoice" in subject</td></tr>
+          <tr><td><span class="inline-code">has:attachment</span></td><td>Emails with attachments</td></tr>
+          <tr><td><span class="inline-code">after:2026/01/01</span></td><td>Emails after Jan 1 2026</td></tr>
+          <tr><td><span class="inline-code">label:STARRED</span></td><td>Starred emails</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Emails API -->
+    <div class="doc-section" id="doc-api-emails" style="display:none;">
+      <div class="eyebrow">API Reference</div>
+      <h1>Emails API</h1>
+      <p class="lead">All endpoints require authentication via session cookie (set after Google OAuth login).</p>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+          <tr><td><span class="method get">GET</span></td><td><span class="inline-code">/api/emails</span></td><td>List inbox (max=50)</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><span class="inline-code">/api/emails/{id}</span></td><td>Get single email</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><span class="inline-code">/api/emails/search?q=</span></td><td>Search using Gmail syntax</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><span class="inline-code">/api/emails/send</span></td><td>Send email</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><span class="inline-code">/api/emails/{id}/summarize</span></td><td>AI summary + triage</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><span class="inline-code">/api/emails/{id}/smart-replies</span></td><td>3 AI reply suggestions</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><span class="inline-code">/api/emails/{id}/archive</span></td><td>Archive email</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><span class="inline-code">/api/emails/{id}/star</span></td><td>Star email</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><span class="inline-code">/api/emails/{id}/trash</span></td><td>Move to trash</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><span class="inline-code">/api/emails/compose-ai</span></td><td>AI draft from instruction</td></tr>
+        </table>
+      </div>
+      <h2>Send email — request body</h2>
+<pre><code>{
+  "to": "recipient@example.com",
+  "subject": "Hello",
+  "body": "Email body text",
+  "inReplyToId": "optional-message-id"
+}</code></pre>
+    </div>
+
+    <!-- User API -->
+    <div class="doc-section" id="doc-api-user" style="display:none;">
+      <div class="eyebrow">API Reference</div>
+      <h1>User API</h1>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+          <tr><td><span class="method get">GET</span></td><td><span class="inline-code">/api/user/me</span></td><td>Get current user info</td></tr>
+          <tr><td><span class="method patch">PATCH</span></td><td><span class="inline-code">/api/user/me</span></td><td>Update name</td></tr>
+          <tr><td><span class="method delete">DELETE</span></td><td><span class="inline-code">/api/user/delete</span></td><td>Delete account</td></tr>
+        </table>
+      </div>
+      <h2>GET /api/user/me — response</h2>
+<pre><code>{
+  "id": "uuid",
+  "email": "user@gmail.com",
+  "name": "Aasish Sharma",
+  "avatarUrl": "https://...",
+  "plan": "free"
+}</code></pre>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /layout -->
+
+<!-- ─── Footer ────────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-links">
+    <a href="/index.html">Home</a>
+    <a href="/solutions.html">Solutions</a>
+    <a href="/pricing.html">Pricing</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/documentation.html">Docs</a>
+    <a href="/careers.html">Careers</a>
+  </div>
+  © 2026 Aura. All rights reserved.
+</footer>
+
+<!-- ─── Scripts ───────────────────────────────────────────────────── -->
+<script>
+/* ── Top nav hamburger ── */
+const hamburger  = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+
+hamburger.addEventListener('click', () => {
+  const isOpen = mobileMenu.classList.toggle('open');
+  hamburger.classList.toggle('open', isOpen);
+  hamburger.setAttribute('aria-expanded', isOpen);
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+});
+mobileMenu.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    mobileMenu.classList.remove('open');
+    hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded','false');
+    document.body.style.overflow = '';
+  });
+});
+window.addEventListener('resize', () => {
+  if(window.innerWidth > 700){
+    mobileMenu.classList.remove('open');
+    hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded','false');
+    document.body.style.overflow = '';
+  }
+});
+
+/* ── Sidebar drawer ── */
+function openDrawer() {
+  document.getElementById('sidebarDrawer').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDrawer() {
+  document.getElementById('sidebarDrawer').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') closeDrawer();
+});
+
+/* ── Section switching ── */
+function show(id, label, section) {
+  // hide all sections
+  document.querySelectorAll('.doc-section').forEach(s => s.style.display = 'none');
+  document.getElementById('doc-' + id).style.display = 'block';
+
+  // update active state in both sidebars
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  // mark the clicked link in whichever sidebar triggered the call
+  if(event && event.target){
+    event.target.closest('.sidebar-link').classList.add('active');
+    // sync the other sidebar's matching link
+    const allLinks = document.querySelectorAll('.sidebar-link');
+    allLinks.forEach(link => {
+      if(link.getAttribute('onclick') === event.target.closest('.sidebar-link').getAttribute('onclick')){
+        link.classList.add('active');
+      }
+    });
+  }
+
+  // update breadcrumb
+  if(label) document.getElementById('breadcrumbCurrent').textContent = label;
+  if(section){
+    document.querySelector('#docsMobileBar .docs-breadcrumb').innerHTML =
+      section + ' › <span id="breadcrumbCurrent">' + label + '</span>';
+  }
+
+  // close drawer and scroll to top
+  closeDrawer();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+</script>
+</body>
+</html>
