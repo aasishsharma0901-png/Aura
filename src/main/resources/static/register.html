@@ -158,7 +158,7 @@ html,body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;back
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         <span id="errorMsg">Something went wrong. Please try again.</span>
       </div>
- <div class="banner success" id="successBanner">
+<div class="banner success" id="successBanner">
   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
   <span id="successMsg">Account created! Redirecting to sign in…</span>
 </div>
@@ -251,13 +251,64 @@ function checkStrength(val) {
   label.textContent = lvl.text;
   label.style.color = lvl.bg;
 }
+
+// Show error message
+function showError(msg) {
+  const errorBanner = document.getElementById('errorBanner');
+  const errorMsg = document.getElementById('errorMsg');
+  errorMsg.textContent = msg;
+  errorBanner.classList.add('show');
+  
+  setTimeout(() => {
+    errorBanner.classList.remove('show');
+  }, 5000);
+}
+
+// Hide error message
+function hideError() {
+  const errorBanner = document.getElementById('errorBanner');
+  errorBanner.classList.remove('show');
+}
+
+// Show success message
+function showSuccess(msg) {
+  const successBanner = document.getElementById('successBanner');
+  const successMsg = document.getElementById('successMsg');
+  if (successMsg) {
+    successMsg.textContent = msg;
+  } else {
+    // If no span, just show the banner
+    const textNode = document.createTextNode(msg);
+    successBanner.appendChild(textNode);
+  }
+  successBanner.classList.add('show');
+}
+
+// Hide success message
+function hideSuccess() {
+  const successBanner = document.getElementById('successBanner');
+  successBanner.classList.remove('show');
+}
+
+// Set loading state
+function setLoading(isLoading) {
+  const submitBtn = document.getElementById('submitBtn');
+  const spinner = document.getElementById('spinner');
+  const btnText = document.getElementById('btnText');
+  
+  if (submitBtn) submitBtn.disabled = isLoading;
+  if (spinner) spinner.style.display = isLoading ? 'block' : 'none';
+  if (btnText) btnText.textContent = isLoading ? 'Creating account…' : 'Create account';
+}
+
+// Main register function
 async function register() {
   const firstName = document.getElementById('firstName').value.trim();
-  const lastName  = document.getElementById('lastName').value.trim();
-  const email     = document.getElementById('regEmail').value.trim();
-  const password  = document.getElementById('regPassword').value;
-  const confirm   = document.getElementById('regConfirm').value;
-  const agreed    = document.getElementById('agreeTerms').checked;
+  const lastName = document.getElementById('lastName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const confirm = document.getElementById('regConfirm').value;
+  const agreed = document.getElementById('agreeTerms').checked;
 
   // Validation
   if (!firstName || !email || !password) {
@@ -282,10 +333,6 @@ async function register() {
   hideError();
   hideSuccess();
 
-  // Add timeout to prevent infinite loading
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
   try {
     console.log('Sending registration request for:', email);
     
@@ -296,11 +343,8 @@ async function register() {
         name: `${firstName} ${lastName}`.trim(),
         email: email,
         password: password
-      }),
-      signal: controller.signal
+      })
     });
-    
-    clearTimeout(timeoutId);
     
     console.log('Response status:', res.status);
     const data = await res.json();
@@ -319,47 +363,30 @@ async function register() {
       setLoading(false);
     }
   } catch (err) {
-    clearTimeout(timeoutId);
     console.error('Registration error:', err);
-    
-    if (err.name === 'AbortError') {
-      showError('Request timed out. Please check your connection and try again.');
-    } else {
-      showError('Network error: ' + err.message);
-    }
+    showError('Network error: ' + err.message);
     setLoading(false);
   }
 }
 
-function showSuccess(msg) {
-  const successBanner = document.getElementById('successBanner');
-  const successMsg = document.getElementById('successMsg');
-  if (successMsg) {
-    successMsg.textContent = msg;
-  }
-  successBanner.classList.add('show');
-  
-  // Auto hide after 5 seconds
-  setTimeout(() => {
-    successBanner.classList.remove('show');
-  }, 5000);
-}
-
-function hideSuccess() {
-  const successBanner = document.getElementById('successBanner');
-  successBanner.classList.remove('show');
-}
-
-// Allow Enter key to submit
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    register();
+// Make sure button has click handler when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  const submitBtn = document.getElementById('submitBtn');
+  if (submitBtn) {
+    submitBtn.onclick = register;
   }
 });
 
-// Also add click handler to the button
-document.getElementById('submitBtn').onclick = register;
+// Allow Enter key to submit
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    const activeElement = document.activeElement;
+    if (activeElement && activeElement.tagName === 'INPUT') {
+      e.preventDefault();
+      register();
+    }
+  }
+});
 </script>
 </body>
 </html>
