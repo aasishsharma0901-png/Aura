@@ -45,7 +45,7 @@ public class AuthController {
         msg.setTo(toEmail);
         msg.setFrom("aasishsharma0909@gmail.com");
         msg.setSubject("Welcome to Aura 👋");
-        msg.setText("Hi " + name + ",\n\nWelcome to Aura! Your account has been created successfully.\n\nSign in at http://localhost:9091/login.html\n\nTeam Aura");
+        msg.setText("Hi " + name + ",\n\nWelcome to Aura! Your account has been created successfully.\n\nSign in at https://aura-production-07f3.up.railway.app/login.html\n\nTeam Aura");
         mailSender.send(msg);
     }
 }
