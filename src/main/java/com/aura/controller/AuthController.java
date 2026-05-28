@@ -15,51 +15,43 @@ public class AuthController {
 
     @Autowired private UserRepository userRepository;
     @Autowired private PasswordEncoder passwordEncoder;
-    @Autowired private JavaMailSender mailSender;  // ← added here
+    @Autowired private JavaMailSender mailSender;
 
     @PostMapping("/register")
-public Map<String, Object> register(@RequestBody Map<String, String> body) {
-    String email = body.get("email");
-    String password = body.get("password");
-    String name = body.get("name");
+    public Map<String, Object> register(@RequestBody Map<String, String> body) {
+        String email    = body.get("email");
+        String password = body.get("password");
+        String name     = body.get("name");
 
-    System.out.println("=== REGISTRATION ATTEMPT ===");
-    System.out.println("Email: " + email);
-    System.out.println("Name: " + name);
+        if (email == null || email.isEmpty())
+            return Map.of("success", false, "message", "Email is required.");
 
-    if (email == null || email.isEmpty())
-        return Map.of("success", false, "message", "Email is required.");
-    
-    if (password == null || password.length() < 8)
-        return Map.of("success", false, "message", "Password must be at least 8 characters.");
-    
-    // Check if user exists
-    boolean exists = userRepository.findByEmail(email).isPresent();
-    System.out.println("User exists in DB? " + exists);
-    
-    if (exists)
-        return Map.of("success", false, "message", "Email already registered.");
+        if (password == null || password.length() < 8)
+            return Map.of("success", false, "message", "Password must be at least 8 characters.");
 
-    User user = new User();
-    user.setEmail(email);
-    user.setName(name != null ? name : email.split("@")[0]);
-    user.setPassword(passwordEncoder.encode(password));
-    user.setProvider("local");
-    
-    userRepository.save(user);
-    System.out.println("User saved successfully!");
+        if (userRepository.findByEmail(email).isPresent())
+            return Map.of("success", false, "message", "Email already registered.");
 
-    // Welcome email (optional)
-    try {
-        sendWelcomeEmail(email, name);
-    } catch (Exception e) {
-        System.out.println("Welcome email skipped: " + e.getMessage());
+        User user = new User();
+        user.setEmail(email);
+        user.setName(name != null ? name : email.split("@")[0]);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setProvider("local");
+        userRepository.save(user);
+
+        // Send welcome email in background — doesn't block the response
+        String finalName = user.getName();
+        new Thread(() -> {
+            try {
+                sendWelcomeEmail(email, finalName);
+            } catch (Exception e) {
+                System.out.println("Welcome email skipped: " + e.getMessage());
+            }
+        }).start();
+
+        return Map.of("success", true, "message", "Account created! Please log in.");
     }
 
-    return Map.of("success", true, "message", "Account created! Please log in.");
-}
-
-    // ── Welcome email ─────────────────────────────────────────────
     private void sendWelcomeEmail(String toEmail, String name) {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(toEmail);

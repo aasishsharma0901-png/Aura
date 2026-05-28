@@ -16,7 +16,7 @@ public class AiService {
     private static final Logger log = LoggerFactory.getLogger(AiService.class);
 
   private static final String GEMINI_URL =
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key=";
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=";
 
     @Value("${gemini.api.key}")
     private String apiKey;
@@ -116,8 +116,6 @@ public class AiService {
            try (Response response = client.newCall(request).execute()) {
     String body = response.body() != null ? response.body().string() : "";
     // Print full response so we can see what's happening
-    System.out.println("=== GEMINI RESPONSE CODE: " + response.code());
-    System.out.println("=== GEMINI RESPONSE BODY: " + body);
     if (!response.isSuccessful()) {
         log.error("Gemini API error {}: {}", response.code(), body);
         return null;

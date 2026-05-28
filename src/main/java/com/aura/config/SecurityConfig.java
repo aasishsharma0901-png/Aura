@@ -32,7 +32,8 @@ public class SecurityConfig {
                     "/", "/index.html", "/login.html", "/register.html", "/pricing.html",
                     "/solutions.html", "/blog.html", "/documentation.html", "/careers.html",
                     "/static/**", "/css/**", "/js/**", "/error",
-                    "/api/auth/register", "/api/razorpay/order",
+                    "/api/auth/register", "/api/auth/login",
+                    "/api/razorpay/order",
                     "/api/subscribe", "/api/apply"
                 ).permitAll()
                 .anyRequest().authenticated()
@@ -44,8 +45,11 @@ public class SecurityConfig {
             )
             .formLogin(form -> form
                 .loginPage("/login.html")
+                .loginProcessingUrl("/api/auth/login")   // ← matches what login.html posts to
                 .defaultSuccessUrl("/inbox.html", true)
                 .failureUrl("/login.html?error=true")
+                .usernameParameter("username")
+                .passwordParameter("password")
                 .permitAll()
             )
             .logout(logout -> logout
