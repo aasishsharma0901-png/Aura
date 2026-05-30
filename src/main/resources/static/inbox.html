@@ -101,7 +101,9 @@ html,body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;back
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.2);gap:0.5rem;font-size:0.875rem;}
 
 /* Compose modal */
-.compose-modal{position:fixed;bottom:1.5rem;right:1.5rem;width:480px;background:rgba(14,16,20,0.97);border:1px solid rgba(255,255,255,0.12);border-radius:1rem;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.7);z-index:100;display:none;flex-direction:column;}
+.compose-backdrop{display:none;position:fixed;inset:0;z-index:99;background:rgba(0,0,0,0.55);backdrop-filter:blur(2px);}
+.compose-backdrop.show{display:block;}
+.compose-modal{position:fixed;bottom:1.5rem;right:1.5rem;width:480px;max-height:90vh;background:rgba(14,16,20,0.98);border:1px solid rgba(255,255,255,0.12);border-radius:1rem;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.7);z-index:100;display:none;flex-direction:column;}
 .compose-modal.show{display:flex;}
 .compose-header{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem;border-bottom:1px solid rgba(255,255,255,0.07);}
 .compose-header-title{font-size:0.8rem;font-weight:600;}
@@ -267,13 +269,12 @@ html,body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;back
 
   /* Compose */
 
+  .compose-backdrop.show{display:block;}
   .compose-modal{
     width:100%;
     height:100%;
-    inset:0;
+    top:0;left:0;right:0;bottom:0;
     border-radius:0;
-    bottom:auto;
-    right:auto;
   }
 
   .compose-body-wrap{
@@ -525,6 +526,9 @@ html,body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;back
   </div>
 </div>
 
+<!-- ── Compose backdrop ── -->
+<div class="compose-backdrop" id="composeBackdrop" onclick="closeCompose()"></div>
+
 <!-- ── Compose modal ── -->
 <div class="compose-modal" id="composeModal">
   <div class="compose-header">
@@ -766,11 +770,15 @@ function openCompose(to = '', subject = '', body = '') {
   document.getElementById('composeSubject').value = subject;
   document.getElementById('composeBody').value = body;
   document.getElementById('composeModal').classList.add('show');
-  document.getElementById('composeTo').focus();
+  document.getElementById('composeBackdrop').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('composeTo').focus(), 50);
 }
 
 function closeCompose() {
   document.getElementById('composeModal').classList.remove('show');
+  document.getElementById('composeBackdrop').classList.remove('show');
+  document.body.style.overflow = '';
   replyToId = null;
 }
 
